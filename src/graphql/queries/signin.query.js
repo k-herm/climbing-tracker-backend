@@ -1,8 +1,6 @@
 const { GraphQLString, GraphQLNonNull, GraphQLError } = require('graphql')
-const bcrypt = require('bcryptjs')
-
+const { signin: signinUser } = require('../../db/queries/user.queries')
 const { User: UserType } = require('../types/user.type')
-const User = require('../../db/models/user.model')
 
 const signin = {
   type: UserType,
@@ -17,18 +15,7 @@ const signin = {
     },
   },
   resolve: async (src, { email, password }, ctx, info) => {
-    const user = await User.findOne({ email }, (error, result) => {
-      if (error) {
-        console.log('Error: ', error)
-        return new GraphQLError('Network Error.')
-      }
-    })
-    if (!user) return new GraphQLError(`No user found for email ${email}`)
-
-    const valid = await bcrypt.compare(password, user.password)
-    if (!valid) {
-      return new GraphQLError('Invalid password')
-    }
+    const user = await signinUser(email, password)
 
     return {
       id: user._id,
