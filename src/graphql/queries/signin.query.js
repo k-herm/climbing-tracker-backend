@@ -16,6 +16,9 @@ const signin = {
   },
   resolve: async (src, { email, password }, ctx, info) => {
     const user = await signinUser(email, password)
+    if (user.message) {
+      return new GraphQLError(user.message)
+    }
 
     return {
       id: user._id,
