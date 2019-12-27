@@ -3,15 +3,18 @@ const User = require('../models/user.model')
 
 const createUser = async (name, email, password, passwordConfirm) => {
   if (password !== passwordConfirm) {
-    return new Error('Passwords do not match.')
+    throw new Error('Passwords do not match.')
   }
-  const hashPassword = await bcrypt.hash(password, 10)
-  const user = new User({ name, email, password: hashPassword })
+
   try {
+    const hashPassword = await bcrypt.hash(password, 10)
+    const user = new User({ name, email, password: hashPassword })
     await user.save()
     return user
+
   } catch (error) {
-    return new Error(error)
+    console.log(error.message)
+    throw new Error(error.message)
   }
 }
 

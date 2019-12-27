@@ -1,33 +1,54 @@
 const express = require('express')
 const graphqlHTTP = require('express-graphql')
-const cors = require('cors')
-// const compression = require('compression')
+// const cors = require('cors')
+const compression = require('compression')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
+const passport = require('passport')
 require('dotenv').config({ path: ".env" })
 
+// const createContext = require('./context')
 const rootSchema = require('./graphql/rootSchema')
 
 const app = express()
-// app.use(compression())
+app.use(compression())
+app.use(cookieParser())
+app.use(bodyParser.json())
+// app.use(bodyParser.urlencoded({extended: true}))
+// app.use(cors({
+//    credentials: true,
+//    origin: [
+//       /^https?:\/\/localhost:\d{4}$/,
+//       //website domain env
+//    ]
+// }))
 
-// GraphqQL server route
+app.use(passport.initialize())
+app.use('/', require('./controller'))
+
+// app.use('/graphql', async (req, res, next) => {
+//    req.context = await createContext(req)
+//    next()
+// })
+
 app.use('/graphql',
-   // cors(),
    graphqlHTTP(async (req) => ({
       schema: rootSchema,
       graphiql: true,
+      // context: req.context,
       pretty: true
    }))
 )
 
-// Connect mongo database
 mongoose.connect(process.env.MONGO_URL, {
    useNewUrlParser: true,
    useCreateIndex: true,
    useUnifiedTopology: true
 })
    .then(() => console.log("Database connected"))
-   .then(() => app.listen(process.env.PORT, () => {
-      console.log('Listening at port:', process.env.port)
-   }))
    .catch((error) => console.log("Database Error: ", error))
+
+app.listen(process.env.PORT, () => {
+   console.log('Listening at port:', process.env.port)
+})
