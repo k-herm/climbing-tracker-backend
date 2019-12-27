@@ -1,28 +1,18 @@
 const express = require('express')
-const passport = require('passport')
-const jwt = require('jsonwebtoken')
 
 const router = express.Router()
 const { createUser } = require('./db/mutations/user.mutations')
+const { signin } = require('./db/queries/user.queries')
 const authenticate = require('./auth')
+const { createPayload, setTokenAndCookie } = require('./utils')
+
 
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, passwordConfirm } = req.body
     const newUser = await createUser(name, email, password, passwordConfirm)
 
-    const payload = {
-      userId: newUser._id,
-      expiry: Date.now() + (1000 * 60 * 60 * 24 * 31)
-    }
-    const token = jwt.sign(payload, process.env.JWT_SECRET)
-    res.cookie('userToken', token, {
-      domain: process.env.LOCAL_DOMAIN,
-      maxAge: (1000 * 60 * 60 * 24 * 31),
-      httpOnly: true,
-      secure: true
-    })
-
+    setTokenAndCookie(createPayload(newUser), res)
     res.status(200).send({ success: true })
 
   } catch (error) {
@@ -30,21 +20,24 @@ router.post('/register', async (req, res) => {
   }
 })
 
-router.get('/validate', authenticate)
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body
+    const user = await signin(email, password)
 
-// router.post('/login', async (req, res) => {
-//   passport.authenticate('local', {
-//     session: false,
-//     failureFlash: true,
-//     failureRedirect: '/login'
-//   },
-//     (error, user) => {
-//       //req.login??
-//     }
-//   )
-// })
+    setTokenAndCookie(createPayload(user), res)
+    res.status(200).send({ success: true })
+  }
+  catch (error) {
+    res.status(401).send({ error: error.message })
+  }
+})
 
 //renew
 //logout res.clearCookie(cookieName, cookieOptions)
+
+router.route('/me')
+  .all(authenticate)
+  .get((req, res) => res.send(req.userId))
 
 module.exports = router
