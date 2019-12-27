@@ -9,7 +9,6 @@ const opts = {
 
 passport.use(new jwt.Strategy(opts,
   async (token, done) => {
-    console.log("Token:", token)
     if (!token)
       return done(null, false)
 
@@ -25,7 +24,7 @@ module.exports = (req, res, next) => {
   passport.authenticate('jwt', { session: false },
     (error, user, info) => {
       if (error || !user) {
-        res.status(401).send({ error: 'User is unauthorized.' })
+        res.status(401).send({ error: 'Please sign in to access.' })
         // res.redirect('/login')
       } else {
         req.userId = user.userId

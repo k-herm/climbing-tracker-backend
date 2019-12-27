@@ -4,7 +4,7 @@ const router = express.Router()
 const { createUser } = require('./db/mutations/user.mutations')
 const { signin } = require('./db/queries/user.queries')
 const authenticate = require('./auth')
-const { createPayload, setTokenAndCookie } = require('./utils')
+const { clearCookie, createPayload, setTokenAndCookie } = require('./utils')
 
 
 router.post('/register', async (req, res) => {
@@ -33,11 +33,20 @@ router.post('/login', async (req, res) => {
   }
 })
 
-//renew
-//logout res.clearCookie(cookieName, cookieOptions)
+router.post('/logout', async (req, res) => {
+  clearCookie(res)
+  res.status(200).send({ success: true })
+})
 
 router.route('/me')
   .all(authenticate)
   .get((req, res) => res.send(req.userId))
+
+router.route('/graphql')
+  .all(authenticate)
+  .all((req, res, next) => {
+    req.context = { userId: req.userId }
+    next()
+  })
 
 module.exports = router

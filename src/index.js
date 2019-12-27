@@ -27,16 +27,11 @@ app.use(bodyParser.json())
 app.use(passport.initialize())
 app.use('/', require('./controller'))
 
-// app.use('/graphql', async (req, res, next) => {
-//    req.context = await createContext(req)
-//    next()
-// })
-
 app.use('/graphql',
    graphqlHTTP(async (req) => ({
       schema: rootSchema,
       graphiql: true,
-      // context: req.context,
+      context: req.context,
       pretty: true
    }))
 )
