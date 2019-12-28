@@ -14,6 +14,7 @@ const signin = async (email, password) => {
     throw new Error('Invalid password')
   }
 
+  await user.generateToken()
   return user
 }
 

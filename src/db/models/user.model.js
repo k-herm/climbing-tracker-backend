@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose')
 const validator = require('validator')
+const { randomBytes } = require('crypto')
 
 const userSchema = new Schema({
    name: {
@@ -22,6 +23,15 @@ const userSchema = new Schema({
       type: String,
       minlength: 1,
       required: true
+   },
+   token: {
+      type: String
+   },
+   resetToken: {
+      type: String
+   },
+   resetTokenExpiry: {
+      type: Number
    }
 })
 
@@ -34,6 +44,12 @@ userSchema.post('save', function (error, doc, next) {
       next(new Error(`${error.errors.email.value} is not a valid email.`))
    }
 })
+
+userSchema.methods.generateToken = function () {
+   let user = this
+   user.token = randomBytes(12).toString('base64')
+   return user.save().then(() => user.token)
+}
 
 const User = model('User', userSchema)
 module.exports = User

@@ -10,6 +10,7 @@ const createUser = async (name, email, password, passwordConfirm) => {
     const hashPassword = await bcrypt.hash(password, 10)
     const user = new User({ name, email, password: hashPassword })
     await user.save()
+    await user.generateToken()
     return user
 
   } catch (error) {
@@ -18,6 +19,18 @@ const createUser = async (name, email, password, passwordConfirm) => {
   }
 }
 
+const logout = async (userId) => {
+  try {
+    const user = await User.findById(userId)
+    user.generateToken()
+    return { success: true }
+  }
+  catch (error) {
+    throw new Error(error.message)
+  }
+}
+
 module.exports = {
-  createUser
+  createUser,
+  logout
 }

@@ -1,7 +1,7 @@
 const express = require('express')
 
 const router = express.Router()
-const { createUser } = require('./db/mutations/user.mutations')
+const { createUser, logout } = require('./db/mutations/user.mutations')
 const { signin } = require('./db/queries/user.queries')
 const authenticate = require('./auth')
 const { clearCookie, createPayload, setTokenAndCookie } = require('./utils')
@@ -33,10 +33,18 @@ router.post('/login', async (req, res) => {
   }
 })
 
-router.post('/logout', async (req, res) => {
-  clearCookie(res)
-  res.status(200).send({ success: true })
-})
+router.route('/logout')
+  .post(authenticate)
+  .post(async (req, res) => {
+    try {
+      await logout(req.userId)
+      clearCookie(res)
+      res.status(200).send({ success: true })
+    } catch (error) {
+      res.status(400).send({ error })
+    }
+
+  })
 
 router.route('/me')
   .all(authenticate)

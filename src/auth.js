@@ -1,5 +1,6 @@
 const passport = require('passport')
 const jwt = require('passport-jwt')
+const User = require('./db/models/user.model')
 
 const opts = {
   jwtFromRequest: req => req.cookies.userToken,
@@ -12,11 +13,10 @@ passport.use(new jwt.Strategy(opts,
     if (!token)
       return done(null, false)
 
-    if (Date.now() > token.expiry)
-      return done(null, false, 'token expired')
-
-    //check if correct user??
-    return done(null, token)
+    return User.findOne({ token: token.token }).then((user) => {
+      if (!user) return done(null, false)
+      return done(null, token)
+    })
   }
 ))
 

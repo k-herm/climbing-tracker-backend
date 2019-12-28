@@ -5,6 +5,7 @@ const COOKIE_NAME = 'userToken'
 
 const createPayload = (user) => ({
   userId: user._id,
+  token: user.token,
   expiry: Date.now() + MAX_AGE
 })
 

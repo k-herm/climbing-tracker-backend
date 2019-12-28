@@ -11,6 +11,8 @@ const setUserMockReturnValue = () => ({
   name: "John",
   email: "John@aol.com",
   password: "password",
+  token: '123',
+  generateToken: jest.fn(),
   __v: 0
 })
 
@@ -44,7 +46,7 @@ describe('user queries', () => {
     )
 
     const user = await signin(email, password).catch(e =>
-      expect(e).toMatch('Invalid password')
+      expect(e.message).toMatch('Invalid password')
     )
   })
 
@@ -56,7 +58,7 @@ describe('user queries', () => {
     User.findOne.mockResolvedValue(userFound)
 
     const user = await signin(email, password).catch(e =>
-      expect(e).toMatch(`No user found for email ${email}`)
+      expect(e.message).toMatch(`No user found for email ${email}`)
     )
   })
 })

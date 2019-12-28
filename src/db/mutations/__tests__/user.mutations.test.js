@@ -17,7 +17,7 @@ describe('user mutations', () => {
     const passwordConfirm = "notPassword"
 
     const newUser = createUser(name, email, password, passwordConfirm).catch(e =>
-      expect(e).toMatch('Passwords do not match.')
+      expect(e.message).toMatch('Passwords do not match.')
     )
   })
 
