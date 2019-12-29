@@ -12,9 +12,9 @@ passport.use(new jwt.Strategy(opts,
   async (token, done) => {
     if (!token)
       return done(null, false)
-
-    return User.findOne({ token: token.token }).then((user) => {
+    return User.findById({ _id: token.userId }).then((user) => {
       if (!user) return done(null, false)
+      if (user.token !== token.token) return done(null, false)
       return done(null, token)
     })
   }

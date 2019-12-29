@@ -1,44 +1,43 @@
 const { GraphQLEnumType, GraphQLInputObjectType } = require('graphql')
 
 const gradeValues = {
-  name: 'Grade',
+  name: 'GradeEnum',
   values: {
-    '5.6': { value: '5.6' },
-    '5.7': { value: '5.7' },
-    '5.8': { value: '5.8' },
-    '5.9': { value: '5.9' },
-    '5.10a': { value: '5.10a' },
-    '5.10b': { value: '5.10b' },
-    '5.10c': { value: '5.10c' },
-    '5.10d': { value: '5.10d' },
-    '5.11a': { value: '5.11a' },
-    '5.11b': { value: '5.11b' },
-    '5.11c': { value: '5.11c' },
-    '5.11d': { value: '5.11d' },
-    '5.12a': { value: '5.12a' },
-    '5.12b': { value: '5.12b' },
-    '5.12c': { value: '5.12c' },
-    '5.12d': { value: '5.12d' },
-    '5.13a': { value: '5.13a' },
-    '5.13b': { value: '5.13b' },
-    '5.13c': { value: '5.13c' },
-    '5.13d': { value: '5.13d' },
-    '5.14a': { value: '5.14a' },
-    '5.14b': { value: '5.14b' },
-    '5.14c': { value: '5.14c' },
-    '5.14d': { value: '5.14d' },
-    '5.15a': { value: '5.15a' },
-    '5.15b': { value: '5.15b' },
-    '5.15c': { value: '5.15c' },
-    '5.15d': { value: '5.15d' }
+    '_5_6': { value: '5.6' },
+    '_5_7': { value: '5.7' },
+    '_5_8': { value: '5.8' },
+    '_5_9': { value: '5.9' },
+    '_5_10a': { value: '5.10a' },
+    '_5_10b': { value: '5.10b' },
+    '_5_10c': { value: '5.10c' },
+    '_5_10d': { value: '5.10d' },
+    '_5_11a': { value: '5.11a' },
+    '_5_11b': { value: '5.11b' },
+    '_5_11c': { value: '5.11c' },
+    '_5_11d': { value: '5.11d' },
+    '_5_12a': { value: '5.12a' },
+    '_5_12b': { value: '5.12b' },
+    '_5_12c': { value: '5.12c' },
+    '_5_12d': { value: '5.12d' },
+    '_5_13a': { value: '5.13a' },
+    '_5_13b': { value: '5.13b' },
+    '_5_13c': { value: '5.13c' },
+    '_5_13d': { value: '5.13d' },
+    '_5_14a': { value: '5.14a' },
+    '_5_14b': { value: '5.14b' },
+    '_5_14c': { value: '5.14c' },
+    '_5_14d': { value: '5.14d' },
+    '_5_15a': { value: '5.15a' },
+    '_5_15b': { value: '5.15b' },
+    '_5_15c': { value: '5.15c' },
+    '_5_15d': { value: '5.15d' }
   }
 }
+const GradeEnum = new GraphQLEnumType(gradeValues)
 
-const Grade = new GraphQLEnumType(gradeValues)
-const GradeInput = new GraphQLInputObjectType(gradeValues)
 
 const routeStyleValues = {
-  name: 'Route Style',
+  name: 'RouteStyleEnumT',
   values: {
     crack: { value: 'Crack' },
     crimpy: { value: 'Crimpy' },
@@ -53,12 +52,11 @@ const routeStyleValues = {
     offFists: { value: 'Off-Fists' }
   }
 }
+const RouteStyleEnum = new GraphQLEnumType(routeStyleValues)
 
-const RouteStyle = new GraphQLEnumType(routeStyleValues)
-const RouteStyleInput = new GraphQLInputObjectType(routeStyleValues)
 
 const attemptValues = {
-  name: 'Attempt Type',
+  name: 'AttemptEnum',
   values: {
     topRope: { value: 'Top Rope' },
     redpoint: { value: 'Redpoint' },
@@ -66,15 +64,11 @@ const attemptValues = {
     onsight: { value: 'Onsight' }
   }
 }
+const AttemptEnum = new GraphQLEnumType(attemptValues)
 
-const Attempt = new GraphQLEnumType(attemptValues)
-const AttemptInput = new GraphQLInputObjectType(attemptValues)
 
 module.exports = {
-  Grade,
-  GradeInput,
-  RouteStyle,
-  RouteStyleInput,
-  Attempt,
-  AttemptInput
+  GradeEnum,
+  RouteStyleEnum,
+  AttemptEnum,
 }

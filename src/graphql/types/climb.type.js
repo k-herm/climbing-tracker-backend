@@ -1,5 +1,6 @@
 const {
   GraphQLObjectType,
+  GraphQLInputObjectType,
   GraphQLID,
   GraphQLString,
   GraphQLNonNull,
@@ -8,17 +9,19 @@ const {
   GraphQLInt,
 } = require('graphql')
 const { GraphQLDate } = require('graphql-iso-date')
-
 const {
-  Grade: GradeType,
-  RouteStyle: RouteStyleType,
-  Attempt: AttemptType
+  GradeEnum,
+  RouteStyleEnum,
+  AttemptEnum
 } = require('./enums.type')
 
 const Climb = new GraphQLObjectType({
   name: 'Climb',
   description: 'Climb information',
   fields: () => ({
+    _id: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
     userId: {
       type: new GraphQLNonNull(GraphQLID)
     },
@@ -32,19 +35,19 @@ const Climb = new GraphQLObjectType({
       type: GraphQLDate
     },
     grade: {
-      type: new GraphQLNonNull(GradeType)
+      type: new GraphQLNonNull(GradeEnum)
     },
     pitches: {
       type: new GraphQLList(Pitch)
     },
     routeStyle: {
-      type: new GraphQLList(RouteStyleType)
+      type: new GraphQLList(RouteStyleEnum)
     },
     attempt: {
-      type: AttemptType
+      type: new GraphQLNonNull(AttemptEnum)
     },
     send: {
-      type: GraphQLBoolean
+      type: new GraphQLNonNull(GraphQLBoolean)
     },
     indoor: {
       type: GraphQLBoolean
@@ -56,18 +59,31 @@ const Climb = new GraphQLObjectType({
 
 const Pitch = new GraphQLObjectType({
   name: 'Pitch',
-  description: 'Pitch information: grade, number',
+  description: 'Pitch information: grade, number of pitches',
   fields: () => ({
     grade: {
-      type: GradeType,
+      type: GradeEnum,
       description: 'Grade / difficulty'
     },
-    number: {
+    numberPitches: {
       type: GraphQLInt,
       description: 'Number of pitches'
     }
   })
-
 })
 
-module.exports = { Climb }
+const PitchInput = new GraphQLInputObjectType({
+  name: 'PitchInput',
+  fields: () => ({
+    grade: {
+      type: GradeEnum,
+      description: 'Grade / difficulty'
+    },
+    numberPitches: {
+      type: GraphQLInt,
+      description: 'Number of pitches'
+    }
+  })
+})
+
+module.exports = { Climb, PitchInput }

@@ -8,7 +8,6 @@ const mongoose = require('mongoose')
 const passport = require('passport')
 require('dotenv').config({ path: ".env" })
 
-// const createContext = require('./context')
 const rootSchema = require('./graphql/rootSchema')
 
 const app = express()
