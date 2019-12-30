@@ -4,8 +4,6 @@ const {
   GraphQLError,
   GraphQLList,
   GraphQLBoolean,
-  // GraphQLInt,
-  // GraphQLID
 } = require('graphql')
 const { GraphQLDate } = require('graphql-iso-date')
 const { Climb: ClimbType, PitchInput: PitchType } = require('../types/climb.type')

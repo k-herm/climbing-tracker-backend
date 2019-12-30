@@ -12,13 +12,18 @@ passport.use(new jwt.Strategy(opts,
   async (token, done) => {
     if (!token)
       return done(null, false)
-    return User.findById({ _id: token.userId }).then((user) => {
-      if (!user) return done(null, false)
-      if (user.token !== token.token) return done(null, false)
+    try {
+      const user = await User.findById({ _id: token.userId })
+      if (!user)
+        return done(null, false)
+      if (user.token !== token.token)
+        return done(null, false)
       return done(null, token)
-    })
-  }
-))
+    } catch (error) {
+      return done(null, false)
+    }
+  })
+)
 
 module.exports = (req, res, next) => {
   passport.authenticate('jwt', { session: false },

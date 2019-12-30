@@ -1,12 +1,11 @@
 const { GraphQLObjectType } = require('graphql')
 
-const { addClimb } = require('./mutations/addClimb.mutation')
+const { climbs } = require('./queries/climbs.query')
 
 const rootQuery = new GraphQLObjectType({
    name: 'RootQuery',
    fields: () => ({
-      //delete
-      addClimb
+      climbs
    })
 })
 
