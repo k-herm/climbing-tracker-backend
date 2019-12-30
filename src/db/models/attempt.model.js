@@ -9,6 +9,10 @@ const attemptSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true
   },
+  date: {
+    type: Date,
+    default: new Date()
+  },
   falls: {
     type: Number,
     default: 0
@@ -20,10 +24,6 @@ const attemptSchema = new Schema({
   attemptType: {
     type: String,
     required: true
-  },
-  send: {
-    type: Boolean,
-    default: false
   }
 })
 
