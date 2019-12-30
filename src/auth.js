@@ -14,9 +14,7 @@ passport.use(new jwt.Strategy(opts,
       return done(null, false)
     try {
       const user = await User.findById({ _id: token.userId })
-      if (!user)
-        return done(null, false)
-      if (user.token !== token.token)
+      if (!user || user.token !== token.token)
         return done(null, false)
       return done(null, token)
     } catch (error) {
