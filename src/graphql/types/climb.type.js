@@ -38,7 +38,10 @@ const Climb = new GraphQLObjectType({
       type: new GraphQLNonNull(GradeEnum)
     },
     pitches: {
-      type: new GraphQLList(Pitch)
+      type: new GraphQLNonNull(new GraphQLList(Pitch))
+    },
+    totalLength: {
+      type: GraphQLInt
     },
     routeStyle: {
       type: new GraphQLList(RouteStyleEnum)
@@ -86,4 +89,4 @@ const PitchInput = new GraphQLInputObjectType({
   })
 })
 
-module.exports = { Climb, PitchInput }
+module.exports = { Climb, Pitch, PitchInput }

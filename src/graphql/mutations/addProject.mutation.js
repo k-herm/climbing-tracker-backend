@@ -4,24 +4,19 @@ const {
   GraphQLNonNull,
   GraphQLError,
   GraphQLList,
-  GraphQLBoolean,
 } = require('graphql')
 const { GraphQLDate } = require('graphql-iso-date')
-const { Climb: ClimbType, PitchInput: PitchType } = require('../types/climb.type')
-const {
-  AttemptEnum,
-  RouteStyleEnum,
-  GradeEnum
-} = require('../types/enums.type')
-const Climb = require('../../db/models/climb.model')
+const { PitchInput: PitchType } = require('../types/climb.type')
+const { Project: ProjectType } = require('../types/project.type')
+const { RouteStyleEnum, GradeEnum } = require('../types/enums.type')
+const Project = require('../../db/models/project.model')
 
-
-const addClimb = {
-  type: ClimbType,
+const addProject = {
+  type: ProjectType,
   args: {
     name: {
-      type: GraphQLString,
-      description: 'Name of climb'
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'Name of Project'
     },
     location: {
       type: GraphQLString,
@@ -33,7 +28,7 @@ const addClimb = {
     },
     grade: {
       type: new GraphQLNonNull(GradeEnum),
-      description: 'Overall rated difficulty of climb'
+      description: 'Overall rated difficulty of Project'
     },
     pitches: {
       type: new GraphQLNonNull(new GraphQLList(PitchType)),
@@ -41,33 +36,21 @@ const addClimb = {
     },
     totalLength: {
       type: GraphQLInt,
-      description: 'Total length of climb'
+      description: 'Total length of project'
     },
     routeStyle: {
       type: new GraphQLList(RouteStyleEnum),
-      description: 'List of climbing styles'
-    },
-    attempt: {
-      type: new GraphQLNonNull(AttemptEnum),
-      description: 'Type of send'
-    },
-    send: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'Successful completion of attempt type'
-    },
-    indoor: {
-      type: GraphQLBoolean,
-      description: 'Indoor or outdoor'
+      description: 'List of Projecting styles'
     }
   },
   resolve: async (src, args, ctx, info) => {
     try {
-      const climb = new Climb({
+      const project = new Project({
         ...args,
         userId: ctx.userId
       })
-      climb.save()
-      return climb
+      project.save()
+      return project
     } catch (error) {
       if (error.message)
         return new GraphQLError(error.message)
@@ -76,5 +59,5 @@ const addClimb = {
 }
 
 module.exports = {
-  addClimb
+  addProject
 }

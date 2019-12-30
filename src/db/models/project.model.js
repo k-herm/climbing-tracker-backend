@@ -1,19 +1,19 @@
 const { Schema, model } = require('mongoose')
 
-const climbSchema = new Schema({
+const projectSchema = new Schema({
    userId: {
       type: Schema.Types.ObjectId,
       required: true
    },
    name: {
       type: String,
+      required: true
    },
    location: {
       type: String
    },
    completedDate: {
-      type: Date,
-      default: new Date()
+      type: Date
    },
    grade: {
       type: String,
@@ -29,19 +29,8 @@ const climbSchema = new Schema({
    },
    routeStyle: {
       type: Array
-   },
-   attempt: {
-      type: String,
-      required: true
-   },
-   send: {
-      type: Boolean,
-      required: true
-   },
-   indoor: {
-      type: Boolean
    }
 })
 
-const Climb = model('Climb', climbSchema)
-module.exports = Climb
+const Project = model('Project', projectSchema)
+module.exports = Project
