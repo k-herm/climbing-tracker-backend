@@ -1,6 +1,6 @@
 const express = require('express')
 const graphqlHTTP = require('express-graphql')
-// const cors = require('cors')
+const cors = require('cors')
 const compression = require('compression')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
@@ -15,13 +15,13 @@ app.use(compression())
 app.use(cookieParser())
 app.use(bodyParser.json())
 // app.use(bodyParser.urlencoded({extended: true}))
-// app.use(cors({
-//    credentials: true,
-//    origin: [
-//       /^https?:\/\/localhost:\d{4}$/,
-//       //website domain env
-//    ]
-// }))
+app.use(cors({
+   credentials: true,
+   origin: [
+      /^https?:\/\/localhost:\d{4}$/,
+      //website domain env
+   ]
+}))
 
 app.use(passport.initialize())
 app.use('/', require('./controller'))

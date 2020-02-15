@@ -14,8 +14,8 @@ router.post('/register', async (req, res) => {
 
     setTokenAndCookie(createPayload(newUser), res)
     res.status(200).send({ success: true })
-
-  } catch (error) {
+  }
+  catch (error) {
     res.status(400).send({ error: error.message })
   }
 })
@@ -40,7 +40,8 @@ router.route('/logout')
       await logout(req.userId)
       clearCookie(res)
       res.status(200).send({ success: true })
-    } catch (error) {
+    }
+    catch (error) {
       res.status(400).send({ error })
     }
 
@@ -48,7 +49,7 @@ router.route('/logout')
 
 router.route('/me')
   .all(authenticate)
-  .get((req, res) => res.send(req.userId))
+  .get((req, res) => res.status(200).send(req.userId))
 
 router.route('/graphql')
   .all(authenticate)
