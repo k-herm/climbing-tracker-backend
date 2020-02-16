@@ -13,7 +13,10 @@ router.post('/register', async (req, res) => {
     const newUser = await createUser(name, email, password, passwordConfirm)
 
     setTokenAndCookie(createPayload(newUser), res)
-    res.status(200).send({ success: true })
+    res.status(200).send({
+      userId: user._id,
+      userName: user.name
+    })
   }
   catch (error) {
     res.status(400).send({ error: error.message })
@@ -26,7 +29,10 @@ router.post('/login', async (req, res) => {
     const user = await signin(email, password)
 
     setTokenAndCookie(createPayload(user), res)
-    res.status(200).send({ success: true })
+    res.status(200).send({
+      userId: user._id,
+      userName: user.name
+    })
   }
   catch (error) {
     res.status(401).send({ error: error.message })
