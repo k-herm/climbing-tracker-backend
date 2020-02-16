@@ -49,7 +49,10 @@ router.route('/logout')
 
 router.route('/me')
   .all(authenticate)
-  .get((req, res) => res.status(200).send(req.userId))
+  .get((req, res) => res.status(200).send({
+    userId: req.userId,
+    userName: req.userName
+  }))
 
 router.route('/graphql')
   .all(authenticate)

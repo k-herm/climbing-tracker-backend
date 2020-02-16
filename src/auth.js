@@ -28,9 +28,9 @@ module.exports = (req, res, next) => {
     (error, user, info) => {
       if (error || !user) {
         res.status(401).send({ error: 'Please sign in to access.' })
-        // res.redirect('/login')
       } else {
         req.userId = user.userId
+        req.userName = user.userName
         next()
       }
     }
