@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 
 const MAX_AGE = 1000 * 60 * 60 * 24 * 31
 const COOKIE_NAME = 'userToken'
+const devEnv = process.env.NODE_ENV === 'development'
 
 const createPayload = (user) => ({
   userId: user._id,
@@ -10,11 +11,18 @@ const createPayload = (user) => ({
   expiry: Date.now() + MAX_AGE
 })
 
+const issuer = devEnv
+  ? process.env.LOCAL_DOMAIN
+  : process.env.APP_DOMAIN
+
 const cookieOptions = {
-  domain: process.env.LOCAL_DOMAIN,
   maxAge: MAX_AGE,
   httpOnly: true,
-  secure: true
+}
+
+if (!devEnv) {
+  cookieOptions.domain = process.env.APP_DOMAIN
+  cookieOptions.secure = true
 }
 
 const setTokenAndCookie = (payload, res) => {
@@ -22,7 +30,7 @@ const setTokenAndCookie = (payload, res) => {
     payload,
     process.env.JWT_SECRET,
     {
-      issuer: process.env.LOCAL_DOMAIN,
+      issuer,
       expiresIn: '31d'
     }
   )

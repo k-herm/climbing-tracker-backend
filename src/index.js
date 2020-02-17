@@ -1,6 +1,7 @@
 const express = require('express')
 const graphqlHTTP = require('express-graphql')
 const cors = require('cors')
+const helmet = require('helmet')
 const compression = require('compression')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
@@ -13,8 +14,9 @@ const rootSchema = require('./graphql/rootSchema')
 const app = express()
 app.use(compression())
 app.use(cookieParser())
+app.use(helmet())
 app.use(bodyParser.json())
-// app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors({
    credentials: true,
    origin: [
