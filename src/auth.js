@@ -39,7 +39,7 @@ module.exports = (req, res, next) => {
       } else {
         console.log(`User ${user._id} authorized to access resource`)
         req.userId = user._id
-        req.userName = user.userName
+        req.userName = user.name
         next()
       }
     }

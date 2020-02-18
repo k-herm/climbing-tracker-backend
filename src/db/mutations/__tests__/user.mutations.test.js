@@ -32,4 +32,10 @@ describe('user mutations', () => {
       expect(result.password).toBe(bcryptMockReturnValue)
     )
   })
+
+  it('should generate a user token', async () => {
+    User.findOne({ name, email }).then(result =>
+      expect(result.token).toBeTruthy()
+    )
+  })
 })

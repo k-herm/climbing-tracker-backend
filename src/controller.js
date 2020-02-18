@@ -1,11 +1,10 @@
 const express = require('express')
-
-const router = express.Router()
 const { createUser, logout } = require('./db/mutations/user.mutations')
 const { signin } = require('./db/queries/user.queries')
 const authenticate = require('./auth')
 const { clearCookie, createPayload, setTokenAndCookie } = require('./utils')
 
+const router = express.Router()
 
 router.post('/register', async (req, res) => {
   try {
