@@ -1,4 +1,4 @@
-const { GraphQLEnumType, GraphQLInputObjectType } = require('graphql')
+const { GraphQLEnumType } = require('graphql')
 
 const gradeValues = {
   name: 'GradeEnum',
@@ -67,8 +67,20 @@ const attemptValues = {
 const AttemptEnum = new GraphQLEnumType(attemptValues)
 
 
+const climbStyleValues = {
+  name: 'ClimbStyleEnum',
+  values: {
+    trad: { value: 'Trad' },
+    sport: { value: 'Sport' },
+    // boulder: { value: 'Boulder' }
+  }
+}
+const ClimbStyleEnum = new GraphQLEnumType(climbStyleValues)
+
+
 module.exports = {
   GradeEnum,
   RouteStyleEnum,
   AttemptEnum,
+  ClimbStyleEnum
 }

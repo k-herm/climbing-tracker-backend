@@ -10,6 +10,7 @@ const { GraphQLDate } = require('graphql-iso-date')
 const {
   GradeEnum,
   RouteStyleEnum,
+  ClimbStyleEnum
 } = require('./enums.type')
 const { Pitch } = require('./climb.type')
 
@@ -43,6 +44,9 @@ const Project = new GraphQLObjectType({
     },
     routeStyle: {
       type: new GraphQLList(RouteStyleEnum)
+    },
+    climbStyle: {
+      type: ClimbStyleEnum
     }
   })
 })
