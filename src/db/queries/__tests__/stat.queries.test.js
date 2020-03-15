@@ -11,4 +11,21 @@ describe('getTotalVertical', () => {
   })
 })
 
-describe('getPitchesThisMonth')
+describe('getPitchesThisMonth', () => {
+  const realDate = Date
+  afterEach(() => global.Date = realDate)
+
+  it('should get the correct number of pitches', () => {
+    const mockDate = new Date("January 10, 2020")
+    global.Date = class extends Date {
+      constructor(date) {
+        if (date) return super(date)
+        return mockDate
+      }
+    }
+
+    const pitches = getPitchesThisMonth(climbs, projects, attempts)
+    expect(pitches).toBe(8)
+  })
+
+})

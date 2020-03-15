@@ -5,7 +5,8 @@ const { getAllUserProjects } = require('../../db/queries/project.queries')
 const { getAllUserClimbs } = require('../../db/queries/climb.queries')
 const { getAllUserAttempts } = require('../../db/queries/attempt.queries')
 const {
-  getTotalVertical
+  getTotalVertical,
+  getPitchesThisMonth
 } = require('../../db/queries/stat.queries')
 
 const stats = {
@@ -17,6 +18,7 @@ const stats = {
       const attempts = await getAllUserAttempts(ctx.userId)
 
       const totalVertical = getTotalVertical(climbs, projects, attempts)
+      const pitchesThisMonth = getPitchesThisMonth(climbs, projects, attempts)
       console.log('projects:', JSON.stringify(projects, null, 2));
       console.log('climbs:', JSON.stringify(climbs, null, 2));
       console.log('attempts:', JSON.stringify(attempts, null, 2));
@@ -27,7 +29,7 @@ const stats = {
           totalVertical,
           highestRedpointGrade: "5.9",
           totalDaysThisYear: 0,
-          pitchesThisMonth: 0
+          pitchesThisMonth
         },
         chartData: {
           gradesChart: [],

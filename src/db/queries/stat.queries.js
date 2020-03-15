@@ -27,9 +27,10 @@ const getTotalVertical = (climbs, projects, attempts) => {
 
 const getPitchesThisMonth = (climbs, projects, attempts) => {
   const isThisMonth = (date) => {
-    const today = new Date();
-    const thisMonth = today.getMonth();
-    const thisYear = today.getFullYear();
+    //fix for local time
+    const today = new Date()
+    const thisMonth = today.getMonth()
+    const thisYear = today.getFullYear()
     return date.getMonth() === thisMonth && date.getFullYear() === thisYear
   }
 
