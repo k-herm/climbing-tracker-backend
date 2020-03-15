@@ -29,6 +29,9 @@ const projectSchema = new Schema({
    },
    routeStyle: {
       type: Array
+   },
+   climbStyle: {
+      type: String
    }
 })
 

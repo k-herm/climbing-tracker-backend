@@ -4,6 +4,7 @@ const { climbs } = require('./queries/climbs.query')
 const { journalEntries } = require('./queries/journalEntries.query')
 const { projects } = require('./queries/projects.query')
 const { attempts } = require('./queries/attempts.query')
+const { stats } = require('./queries/stats.query')
 
 const rootQuery = new GraphQLObjectType({
    name: 'RootQuery',
@@ -11,7 +12,8 @@ const rootQuery = new GraphQLObjectType({
       climbs,
       journalEntries,
       projects,
-      attempts
+      attempts,
+      stats
    })
 })
 

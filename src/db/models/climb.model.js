@@ -30,6 +30,9 @@ const climbSchema = new Schema({
    routeStyle: {
       type: Array
    },
+   climbStyle: {
+      type: String
+   },
    attempt: {
       type: String,
       required: true

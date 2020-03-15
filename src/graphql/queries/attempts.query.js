@@ -6,7 +6,7 @@ const {
 } = require('graphql')
 
 const { Attempt: AttemptType } = require('../types/attempt.type')
-const Attempt = require('../../db/models/attempt.model')
+const { getAllProjectAttempts } = require('../../db/queries/attempt.queries')
 
 const attempts = {
   type: new GraphQLList(AttemptType),
@@ -18,12 +18,7 @@ const attempts = {
   },
   resolve: async (src, args, ctx, info) => {
     try {
-      const attempts = await Attempt.find({
-        userId: ctx.userId,
-        projectId: args.projectId
-      }).sort({ date: 'desc' })
-
-      if (!attempts) return []
+      const attempts = await getAllProjectAttempts(ctx.userId, args.projectId)
       return attempts
     } catch (error) {
       if (error.message)

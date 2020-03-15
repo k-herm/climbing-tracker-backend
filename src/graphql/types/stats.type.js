@@ -17,11 +17,8 @@ const {
 
 const Stats = new GraphQLObjectType({
   name: 'Stats',
-  description: 'Stat Data',
+  description: 'StatData',
   fields: () => ({
-    _id: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
     userId: {
       type: new GraphQLNonNull(GraphQLID)
     },
@@ -35,7 +32,7 @@ const Stats = new GraphQLObjectType({
 })
 
 const NumericStatistics = new GraphQLObjectType({
-  name: 'Numeric Statistics',
+  name: 'NumericStatistics',
   description: 'Totals',
   fields: () => ({
     totalVertical: {
@@ -58,7 +55,7 @@ const NumericStatistics = new GraphQLObjectType({
 })
 
 const ChartData = new GraphQLObjectType({
-  name: 'Chart Data',
+  name: 'ChartData',
   fields: () => ({
     gradesChart: {
       type: new GraphQLNonNull(GraphQLList(DataValues))
@@ -70,17 +67,35 @@ const ChartData = new GraphQLObjectType({
 })
 
 const DataValues = new GraphQLObjectType({
-  name: 'Data Values',
+  name: 'DataValues',
   fields: () => ({
-    attemptType: AttemptEnum,
-    routeStyle: RouteStyleEnum,
-    climbStyle: ClimbStyleEnum,
-    grade: GradeEnum,
-    count: GraphQLInt,
-    location: GraphQLString,
-    date: GraphQLDate,
-    send: GraphQLBoolean,
-    indoor: GraphQLBoolean
+    attemptType: {
+      type: AttemptEnum
+    },
+    routeStyle: {
+      type: RouteStyleEnum
+    },
+    climbStyle: {
+      type: ClimbStyleEnum
+    },
+    grade: {
+      type: GradeEnum
+    },
+    count: {
+      type: GraphQLInt
+    },
+    location: {
+      type: GraphQLString
+    },
+    date: {
+      type: GraphQLDate
+    },
+    send: {
+      type: GraphQLBoolean
+    },
+    indoor: {
+      type: GraphQLBoolean
+    }
   })
 })
 
