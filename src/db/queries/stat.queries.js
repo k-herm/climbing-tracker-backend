@@ -1,18 +1,27 @@
-// const sortGrades = (gradesArray) => {
-//   gradesArray.sort((a, b) => {
-//     let c = a.split(" ");
-//     let d = b.split(" ");
-//     const grade1 = parseInt(c[0].replace("5.", ""));
-//     const grade2 = parseInt(d[0].replace("5.", ""));
-//     if (grade1 - grade2 < 0) return -1;
-//     else if (grade1 - grade2 > 0) return 1;
+const sortGrades = (gradesArray) => {
+  const getLetter = (grade) => {
+    let letter = ''
+    if (/[a-d]/.test(grade)) {
+      letter = grade.slice(-1)
+    }
+    return letter
+  }
 
-//     if (c[1] < d[1]) return -1;
-//     else if (c[1] > d[1]) return 1;
-//     else return 0;
-//   })
-//   return gradesArray;
-// }
+  gradesArray.sort((a, b) => {
+    const letter1 = getLetter(a)
+    const letter2 = getLetter(b)
+    const grade1 = parseInt(a.replace("5.", ""))
+    const grade2 = parseInt(b.replace("5.", ""))
+    if (grade1 - grade2 < 0) return -1;
+    else if (grade1 - grade2 > 0) return 1;
+
+    if (letter1 < letter2) return -1;
+    else if (letter1 > letter2) return 1;
+    else return 0;
+  })
+
+  return gradesArray;
+}
 
 const getTotalVertical = (climbs, projects, attempts) => {
   let total = climbs.reduce((acc, curr) => acc + curr.totalLength, 0)
@@ -25,10 +34,9 @@ const getTotalVertical = (climbs, projects, attempts) => {
   return total
 }
 
-const getPitchesThisMonth = (climbs, projects, attempts) => {
+const getPitchesThisMonth = (climbs, projects, attempts, todaysDate) => {
   const isThisMonth = (date) => {
-    //fix for local time
-    const today = new Date()
+    const today = new Date(todaysDate)
     const thisMonth = today.getMonth()
     const thisYear = today.getFullYear()
     return date.getMonth() === thisMonth && date.getFullYear() === thisYear
@@ -64,65 +72,61 @@ const getPitchesThisMonth = (climbs, projects, attempts) => {
   return total
 }
 
-// const getTotalDaysThisYear = (climbs, projects) => {
-//   const today = new Date();
-//   const thisYear = today.getFullYear();
+const getTotalDaysThisYear = (climbs, projects, attempts, todaysDate) => {
+  const today = new Date(todaysDate);
+  const thisYear = today.getFullYear();
 
-//   const allDays = []
+  const totalDays = []
 
-//   if (climbs.length > 0) {
-//     climbs.forEach(climb => {
-//       const climbDate = new Date(climb.createdAt)
-//       climbDate.getFullYear() === thisYear && allDays.push(climbDate)
-//     });
-//   }
+  const dateString = (date) => `${date.getMonth()} ${date.getDate()}`
 
-//   if (projects.length > 0) {
-//     projects.forEach(project => {
-//       if (project.completedDate) {
-//         const completeDate = new Date(project.completedDate)
-//         completeDate.getFullYear() === thisYear && allDays.push(completeDate)
-//       }
-//       project.attempts.forEach(attempt => {
-//         const attemptDate = new Date(attempt.createdAt)
-//         attemptDate.getFullYear() === thisYear && allDays.push(attemptDate)
-//       })
-//     });
-//   }
+  const isNewDate = (date) =>
+    date.getFullYear() === thisYear && !totalDays.includes(dateString(date))
 
-//   allDays.sort();
+  climbs.forEach(climb => {
+    const climbDate = new Date(climb.completedDate)
+    if (isNewDate(climbDate)) {
+      totalDays.push(dateString(climbDate))
+    }
+  })
 
-//   const filteredDays = allDays.filter((date, i, arr) => {
-//     if (i < 1) return true
-//     return !(date.getMonth() === arr[i - 1].getMonth() && date.getDate() === arr[i - 1].getDate())
-//   })
+  projects.forEach(project => {
+    if (project.completedDate) {
+      const projectDate = new Date(project.completedDate)
+      if (isNewDate(projectDate)) {
+        totalDays.push(dateString(projectDate))
+      }
+    }
+  })
 
-//   return filteredDays.length
-// }
+  attempts.forEach(attempt => {
+    const attemptDate = new Date(attempt.date)
+    if (isNewDate(attemptDate)) {
+      totalDays.push(dateString(attemptDate))
+    }
+  })
 
-// const getHighestRedpointGrade = (climbs, projects) => {
-//   let redpoints = []
-//   if (climbs.length > 0) {
-//     redpoints = climbs.filter(climb =>
-//       climb.sendType === "Redpoint" || climb.sendType === "Onsight")
-//       .map(climb => climb.grade);
-//   }
+  return totalDays.length
+}
 
-//   if (projects.length > 0) {
-//     redpoints.concat(
-//       projects.filter(project => project.completedDate)
-//         .map(project => project.grade)
-//     )
-//   }
+const getHighestRedpointGrade = (climbs, projects) => {
+  const climbRedpoints = climbs.filter(climb => climb.send && climb.attempt !== 'Top Rope')
+    .map(climb => climb.grade);
 
-//   const allGrades = sortGrades(redpoints);
-//   if (allGrades.length > 0) return allGrades[allGrades.length - 1]
-//   return null
-// }
+  const projectRedpoints = projects.filter(project => project.completedDate)
+    .map(project => project.grade)
+
+  const totalRedpoints = [...climbRedpoints, ...projectRedpoints]
+
+  const allGrades = sortGrades(totalRedpoints)
+  if (allGrades.length) return allGrades[allGrades.length - 1]
+  return null
+}
 
 module.exports = {
   getTotalVertical,
   getPitchesThisMonth,
-  // getTotalDaysThisYear,
-  // getHighestRedpointGrade
+  getTotalDaysThisYear,
+  getHighestRedpointGrade,
+  sortGrades
 }

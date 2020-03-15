@@ -1,25 +1,34 @@
 const climbs = [
   {
     totalLength: 10,
+    grade: '5.8',
     pitches: [
       { grade: '5.6', numberPitches: 2 },
       { grade: '5.7', numberPitches: 1 },
       { grade: '5.8', numberPitches: 1 }
     ],
-    completedDate: new Date("January 7, 2020")
+    completedDate: new Date("January 7, 2020"),
+    send: false,
+    attempt: 'Onsight'
   },
   {
     totalLength: 20,
+    grade: '5.10a',
     pitches: [
       { grade: '5.10a', numberPitches: 2 }
     ],
+    send: true,
+    attempt: 'Top Rope',
     completedDate: new Date("December 7, 2019")
   },
   {
     totalLength: 30,
+    grade: '5.11b',
     pitches: [
       { grade: '5.11b', numberPitches: 1 },
     ],
+    send: true,
+    attempt: 'Redpoint',
     completedDate: new Date("December 7, 2019")
   }
 ]
@@ -31,7 +40,8 @@ const projects = [
     completedDate: new Date("January 2, 2020"),
     pitches: [
       { grade: '5.12a', numberPitches: 1 }
-    ]
+    ],
+    grade: '5.12a'
   },
   {
     _id: 2,
@@ -39,7 +49,8 @@ const projects = [
     completedDate: null,
     pitches: [
       { grade: '5.12b', numberPitches: 1 }
-    ]
+    ],
+    grade: '5.12b'
   },
   {
     _id: 3,
@@ -47,7 +58,8 @@ const projects = [
     completedDate: new Date("December 5, 2019"),
     pitches: [
       { grade: '5.11d', numberPitches: 1 }
-    ]
+    ],
+    grade: '5.11d'
   },
   {
     _id: 4,
@@ -55,7 +67,8 @@ const projects = [
     completedDate: null,
     pitches: [
       { grade: '5.11c', numberPitches: 1 }
-    ]
+    ],
+    grade: '5.11c'
   }
 ]
 

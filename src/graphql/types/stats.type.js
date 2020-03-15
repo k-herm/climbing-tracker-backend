@@ -40,7 +40,7 @@ const NumericStatistics = new GraphQLObjectType({
       description: 'Total metres climbed'
     },
     highestRedpointGrade: {
-      type: new GraphQLNonNull(GradeEnum),
+      type: GradeEnum,
       description: 'Highest grade completed'
     },
     totalDaysThisYear: {
