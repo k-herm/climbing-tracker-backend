@@ -50,13 +50,13 @@ const { climbs, projects, attempts } = require('../mockData')
 
 describe('getNumericStatistics', () => {
   it('should aggregate all data', () => {
-    const todaysDate = new Date("January 10, 2020")
+    const todaysDate = "January 10, 2020"
     const data = getNumericStatistics(climbs, projects, attempts, todaysDate)
     expect(data).toEqual({
-      totalVertical: 165,
+      totalVertical: 150,
       highestRedpointGrade: '5.12a',
       totalDaysThisYear: 4,
-      pitchesThisMonth: 8
+      pitchesThisMonth: 7
     })
   })
 })

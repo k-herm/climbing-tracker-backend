@@ -4,10 +4,9 @@ const { GraphQLDate } = require('graphql-iso-date')
 const { Stats: StatType } = require('../types/stats.type')
 const {
   getNumericStatistics,
-  getChartData,
-  getUserData
+  getChartData
 } = require('../../db/queries/stat.queries')
-
+const { getUserData } = require('../../db/queries/user.queries')
 
 const stats = {
   type: StatType,
@@ -26,7 +25,7 @@ const stats = {
         totalDaysThisYear,
         pitchesThisMonth
       } = getNumericStatistics(climbs, projects, attempts, date)
-      const { gradesChart } = await getChartData(ctx.userId, projects)
+      const gradesChart = await getGradesBarChart(ctx.userId)
 
       return {
         userId: ctx.userId,
@@ -42,8 +41,8 @@ const stats = {
         }
       }
     } catch (error) {
-      if (error.message)
-        return new GraphQLError(error.message)
+      console.log(error.message)
+      return new GraphQLError(error.message)
     }
   }
 }

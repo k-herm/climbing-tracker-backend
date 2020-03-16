@@ -79,11 +79,15 @@ const attempts = [
   },
   {
     projectId: 1,
-    date: new Date("January 1, 2020")
+    date: new Date("January 2, 2020")
   },
   {
     projectId: 3,
     date: new Date("December 1, 2019")
+  },
+  {
+    projectId: 3,
+    date: new Date("December 5, 2019")
   },
   {
     projectId: 4,

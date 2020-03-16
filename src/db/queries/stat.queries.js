@@ -1,55 +1,12 @@
 const Project = require('../models/project.model')
 const Climb = require('../models/climb.model')
-const Attempt = require('../models/climb.model')
-const { getAllUserProjects } = require('./project.queries')
-const { getAllUserClimbs } = require('./climb.queries')
-const { getAllUserAttempts } = require('./attempt.queries')
-
-const isThisMonth = (date, todaysDate) => {
-  const today = new Date(todaysDate)
-  const thisMonth = today.getMonth()
-  const thisYear = today.getFullYear()
-  return date.getMonth() === thisMonth && date.getFullYear() === thisYear
-}
-
-const getNumberPitches = (arr) =>
-  arr.reduce((acc, curr) => acc + curr.numberPitches, 0)
-
-const dateString = (date) => `${date.getMonth()} ${date.getDate()}`
-
-const sortTwoGrades = (a, b) => {
-  const getLetter = (grade) => {
-    let letter = ''
-    if (/[a-d]/.test(grade)) {
-      letter = grade.slice(-1)
-    }
-    return letter
-  }
-
-  const letter1 = getLetter(a)
-  const letter2 = getLetter(b)
-  const grade1 = parseInt(a.replace("5.", ""))
-  const grade2 = parseInt(b.replace("5.", ""))
-  if (grade1 - grade2 < 0) return -1
-  else if (grade1 - grade2 > 0) return 1
-
-  if (letter1 < letter2) return -1
-  else if (letter1 > letter2) return 1
-  else return 0
-}
-
-const getHigherGrade = (a, b) => {
-  const val = sortTwoGrades(a, b)
-  switch (val) {
-    case -1: return b
-    case 0: return a
-    case 1: return a
-  }
-}
-
-const sortArrayOfObjectsByGrade = (gradesArray) =>
-  gradesArray.sort((a, b) => sortTwoGrades(a._id, b._id))
-
+const Attempt = require('../models/attempt.model')
+const {
+  dateString,
+  isThisMonth,
+  getHigherGrade,
+  sortArrayOfObjectsByGrade
+} = require('../utils')
 
 const getNumericStatistics = (climbs, projects, attempts, date) => {
   const data = {
@@ -58,9 +15,13 @@ const getNumericStatistics = (climbs, projects, attempts, date) => {
     totalDaysThisYear: 0,
     pitchesThisMonth: 0
   }
+
   const todaysDate = new Date(date)
   const totalCalendarDays = []
   const thisYear = todaysDate.getFullYear()
+
+  const getNumberPitches = (arr) =>
+    arr.reduce((acc, curr) => acc + curr.numberPitches, 0)
 
   const isNewDate = (date) =>
     date.getFullYear() === thisYear && !totalCalendarDays.includes(dateString(date))
@@ -88,23 +49,10 @@ const getNumericStatistics = (climbs, projects, attempts, date) => {
   projects.forEach(project => {
     const projectPitches = getNumberPitches(project.pitches)
     if (project.completedDate) {
-      const projectDate = new Date(project.completedDate)
-      //vertical
-      data.totalVertical += project.totalLength
-      //days
-      if (isNewDate(projectDate)) {
-        totalCalendarDays.push(dateString(projectDate))
-        data.totalDaysThisYear += 1
-      }
-      //pitches
-      if (isThisMonth(projectDate, todaysDate)) {
-        data.pitchesThisMonth += projectPitches
-      }
       //redpoint
       data.highestRedpointGrade = getHigherGrade(data.highestRedpointGrade, project.grade)
     }
 
-    // include attempts
     const totalAttempts = attempts.filter(attempt => attempt.projectId === project._id)
     //vertical
     data.totalVertical += totalAttempts.length * project.totalLength
@@ -128,22 +76,8 @@ const getNumericStatistics = (climbs, projects, attempts, date) => {
   return data
 }
 
-const getUserData = async (userId) => {
-  const p = getAllUserProjects(userId)
-  const c = getAllUserClimbs(userId)
-  const a = getAllUserAttempts(userId)
-  const results = await Promise.all([p, c, a])
-
-  const projects = results[0]
-  const climbs = results[1]
-  const attempts = results[2]
-
-  return { projects, climbs, attempts }
-}
-
-const getChartData = async (userId, projects) => {
-  //need to include project data
-  const gradeClimbsAgg = await Climb.aggregate()
+const climbsGradeAttemptCountsAgg = (userId) => (
+  Climb.aggregate()
     .match({ userId, send: true })
     .group({
       _id: { grade: '$grade', attempt: '$attempt' },
@@ -159,39 +93,39 @@ const getChartData = async (userId, projects) => {
         }
       }
     })
+)
 
-  const attemptsAgg = await Attempt.aggregate()
-    .match({ userId })
-  // .group({
-  //   _id: '$projectId',
-  //   attempts: {
-  //     $addToSet: {
-  //       attemptType: '$attemptType',
-  //       falls: '$falls',
-  //       takes: '$takes'
-  //     }
-  //   }
-  // })
-  // .match({ attempts: { falls: 0, takes: 0 } })
-  // .group({
-  //   _id: { projectId: '$_id', attempt: '$attempts.attemptType' },
-  //   count: { $sum: 1 },
-  // })
+const attemptsProjectCountsAgg = (userId) => (
+  Attempt.aggregate()
+    .match({ userId, falls: 0, takes: 0 })
+    .group({
+      _id: { project: '$projectId', attempt: '$attemptType' },
+      count: { $sum: 1 }
+    })
+    .group({
+      _id: '$_id.project',
+      count: { $sum: '$count' },
+      attempts: {
+        $addToSet: {
+          _id: '$_id.attempt',
+          count: '$count'
+        }
+      }
+    })
+    .lookup({
+      from: 'projects',
+      localField: '_id',
+      foreignField: '_id',
+      as: 'projectData'
+    })
+)
 
-  // const gradeProjects = []
-  // projects.forEach(project => {
+const getChartData = async (userId, projects) => {
+  //need to include project data
+  const climbsAgg = await climbsGradeAttemptCountsAgg(userId)
+  const attemptsAgg = await attemptsProjectCountsAgg(userId)
 
-  //   gradeProjects.push({
-  //     _id: project.grade,
-  //     count: 0,
-  //     attempts: [{ _id: 'Redpoint', count: 0 }]
-  //   })
-  // })
-
-  sortArrayOfObjectsByGrade(gradeClimbsAgg)
-  // const styleCounts = async ()
-
-  const gradesChart = gradeClimbsAgg.map(grade => ({
+  const gradesChart = climbsAgg.map(grade => ({
     grade: grade._id,
     count: grade.count,
     attempts: grade.attempts.map(attempt => ({
@@ -200,7 +134,25 @@ const getChartData = async (userId, projects) => {
     }))
   }))
 
-  console.log(JSON.stringify(attemptsAgg, null, 2));
+  const projectsAgg = attemptsAgg.map((project) => ({
+    grade: project.projectData[0].grade,
+    count: project.count,
+    attempts: project.attempts.map((attempt) => ({
+      attemptType: attempt._id,
+      count: attempt.count
+    }))
+  }))
+
+  // projectsAgg.forEach(project => {
+  //   const res = gradesChart.find((climb) => climb.grade === project.grade)
+  //   res.count += project.count
+
+  // })
+  sortArrayOfObjectsByGrade(gradesChart, 'grade')
+  // const styleCounts = async ()
+
+
+  console.log(JSON.stringify(projectsAgg, null, 2));
   return {
     gradesChart
   }
@@ -312,6 +264,5 @@ module.exports = {
   // getHighestRedpointGrade,
   // sortGrades,
   getNumericStatistics,
-  getChartData,
-  getUserData
+  getChartData
 }
