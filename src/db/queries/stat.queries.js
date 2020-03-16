@@ -1,7 +1,9 @@
 const Project = require('../models/project.model')
 const Climb = require('../models/climb.model')
 const Attempt = require('../models/climb.model')
-
+const { getAllUserProjects } = require('./project.queries')
+const { getAllUserClimbs } = require('./climb.queries')
+const { getAllUserAttempts } = require('./attempt.queries')
 
 const isThisMonth = (date, todaysDate) => {
   const today = new Date(todaysDate)
@@ -15,7 +17,7 @@ const getNumberPitches = (arr) =>
 
 const dateString = (date) => `${date.getMonth()} ${date.getDate()}`
 
-const getHigherGrade = (a, b) => {
+const sortTwoGrades = (a, b) => {
   const getLetter = (grade) => {
     let letter = ''
     if (/[a-d]/.test(grade)) {
@@ -28,22 +30,35 @@ const getHigherGrade = (a, b) => {
   const letter2 = getLetter(b)
   const grade1 = parseInt(a.replace("5.", ""))
   const grade2 = parseInt(b.replace("5.", ""))
-  if (grade1 - grade2 < 0) return b
-  else if (grade1 - grade2 > 0) return a
+  if (grade1 - grade2 < 0) return -1
+  else if (grade1 - grade2 > 0) return 1
 
-  if (letter1 < letter2) return b
-  else if (letter1 > letter2) return a
-  else return a
+  if (letter1 < letter2) return -1
+  else if (letter1 > letter2) return 1
+  else return 0
 }
 
-const getNumericStatistics = (climbs, projects, attempts, todaysDate) => {
+const getHigherGrade = (a, b) => {
+  const val = sortTwoGrades(a, b)
+  switch (val) {
+    case -1: return b
+    case 0: return a
+    case 1: return a
+  }
+}
+
+const sortArrayOfObjectsByGrade = (gradesArray) =>
+  gradesArray.sort((a, b) => sortTwoGrades(a._id, b._id))
+
+
+const getNumericStatistics = (climbs, projects, attempts, date) => {
   const data = {
     totalVertical: 0,
     highestRedpointGrade: '',
     totalDaysThisYear: 0,
     pitchesThisMonth: 0
   }
-
+  const todaysDate = new Date(date)
   const totalCalendarDays = []
   const thisYear = todaysDate.getFullYear()
 
@@ -89,7 +104,7 @@ const getNumericStatistics = (climbs, projects, attempts, todaysDate) => {
       data.highestRedpointGrade = getHigherGrade(data.highestRedpointGrade, project.grade)
     }
 
-    // attempts
+    // include attempts
     const totalAttempts = attempts.filter(attempt => attempt.projectId === project._id)
     //vertical
     data.totalVertical += totalAttempts.length * project.totalLength
@@ -113,36 +128,84 @@ const getNumericStatistics = (climbs, projects, attempts, todaysDate) => {
   return data
 }
 
+const getUserData = async (userId) => {
+  const p = getAllUserProjects(userId)
+  const c = getAllUserClimbs(userId)
+  const a = getAllUserAttempts(userId)
+  const results = await Promise.all([p, c, a])
 
+  const projects = results[0]
+  const climbs = results[1]
+  const attempts = results[2]
 
+  return { projects, climbs, attempts }
+}
 
+const getChartData = async (userId, projects) => {
+  //need to include project data
+  const gradeClimbsAgg = await Climb.aggregate()
+    .match({ userId, send: true })
+    .group({
+      _id: { grade: '$grade', attempt: '$attempt' },
+      count: { $sum: 1 }
+    })
+    .group({
+      _id: '$_id.grade',
+      count: { $sum: '$count' },
+      attempts: {
+        $addToSet: {
+          _id: '$_id.attempt',
+          count: '$count'
+        }
+      }
+    })
 
+  const attemptsAgg = await Attempt.aggregate()
+    .match({ userId })
+  // .group({
+  //   _id: '$projectId',
+  //   attempts: {
+  //     $addToSet: {
+  //       attemptType: '$attemptType',
+  //       falls: '$falls',
+  //       takes: '$takes'
+  //     }
+  //   }
+  // })
+  // .match({ attempts: { falls: 0, takes: 0 } })
+  // .group({
+  //   _id: { projectId: '$_id', attempt: '$attempts.attemptType' },
+  //   count: { $sum: 1 },
+  // })
 
+  // const gradeProjects = []
+  // projects.forEach(project => {
 
-// const sortGrades = (gradesArray) => {
-//   const getLetter = (grade) => {
-//     let letter = ''
-//     if (/[a-d]/.test(grade)) {
-//       letter = grade.slice(-1)
-//     }
-//     return letter
-//   }
+  //   gradeProjects.push({
+  //     _id: project.grade,
+  //     count: 0,
+  //     attempts: [{ _id: 'Redpoint', count: 0 }]
+  //   })
+  // })
 
-//   gradesArray.sort((a, b) => {
-//     const letter1 = getLetter(a)
-//     const letter2 = getLetter(b)
-//     const grade1 = parseInt(a.replace("5.", ""))
-//     const grade2 = parseInt(b.replace("5.", ""))
-//     if (grade1 - grade2 < 0) return -1;
-//     else if (grade1 - grade2 > 0) return 1;
+  sortArrayOfObjectsByGrade(gradeClimbsAgg)
+  // const styleCounts = async ()
 
-//     if (letter1 < letter2) return -1;
-//     else if (letter1 > letter2) return 1;
-//     else return 0;
-//   })
+  const gradesChart = gradeClimbsAgg.map(grade => ({
+    grade: grade._id,
+    count: grade.count,
+    attempts: grade.attempts.map(attempt => ({
+      attemptType: attempt._id,
+      count: attempt.count
+    }))
+  }))
 
-//   return gradesArray
-// }
+  console.log(JSON.stringify(attemptsAgg, null, 2));
+  return {
+    gradesChart
+  }
+}
+
 
 // const getTotalVertical = (climbs, projects, attempts) => {
 //   let total = climbs.reduce((acc, curr) => acc + curr.totalLength, 0)
@@ -248,5 +311,7 @@ module.exports = {
   // getTotalDaysThisYear,
   // getHighestRedpointGrade,
   // sortGrades,
-  getNumericStatistics
+  getNumericStatistics,
+  getChartData,
+  getUserData
 }

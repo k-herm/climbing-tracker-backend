@@ -69,8 +69,8 @@ const ChartData = new GraphQLObjectType({
 const DataValues = new GraphQLObjectType({
   name: 'DataValues',
   fields: () => ({
-    attemptType: {
-      type: AttemptEnum
+    attempts: {
+      type: new GraphQLList(AttemptValues)
     },
     routeStyle: {
       type: RouteStyleEnum
@@ -95,6 +95,18 @@ const DataValues = new GraphQLObjectType({
     },
     indoor: {
       type: GraphQLBoolean
+    }
+  })
+})
+
+const AttemptValues = new GraphQLObjectType({
+  name: 'AttemptTypes',
+  fields: () => ({
+    attemptType: {
+      type: new GraphQLNonNull(AttemptEnum)
+    },
+    count: {
+      type: new GraphQLNonNull(GraphQLInt)
     }
   })
 })
