@@ -12,6 +12,26 @@ const getAllUserClimbs = async (userId) => {
   }
 }
 
+const climbsGradeAttemptCountsAgg = (userId) => (
+  Climb.aggregate()
+    .match({ userId, send: true })
+    .group({
+      _id: { grade: '$grade', attempt: '$attempt' },
+      count: { $sum: 1 }
+    })
+    .group({
+      _id: '$_id.grade',
+      count: { $sum: '$count' },
+      attempts: {
+        $addToSet: {
+          _id: '$_id.attempt',
+          count: '$count'
+        }
+      }
+    })
+)
+
 module.exports = {
+  climbsGradeAttemptCountsAgg,
   getAllUserClimbs
 }

@@ -4,7 +4,7 @@ const { GraphQLDate } = require('graphql-iso-date')
 const { Stats: StatType } = require('../types/stats.type')
 const {
   getNumericStatistics,
-  getChartData
+  getGradesBarChart
 } = require('../../db/queries/stat.queries')
 const { getUserData } = require('../../db/queries/user.queries')
 

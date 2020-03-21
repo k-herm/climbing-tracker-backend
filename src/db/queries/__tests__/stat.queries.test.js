@@ -1,52 +1,20 @@
 const {
-  // getTotalVertical,
-  // getPitchesThisMonth,
-  // getTotalDaysThisYear,
-  // getHighestRedpointGrade,
-  // sortGrades,
-  getNumericStatistics
+  getNumericStatistics,
+  getGradesBarChart
 } = require('../stat.queries')
-const { climbs, projects, attempts } = require('../mockData')
+const {
+  climbs,
+  climbsAgg,
+  projects,
+  attempts,
+  attemptsAgg,
+  gradesChart
+} = require('../mockData')
+const { climbsGradeAttemptCountsAgg } = require('../climb.queries')
+const { attemptsProjectCountsAgg } = require('../attempt.queries')
 
-// describe('getTotalVertical', () => {
-//   it('should calculate correct total', () => {
-//     const total = getTotalVertical(climbs, projects, attempts)
-//     expect(total).toBe(165)
-//   })
-// })
-
-// describe('getPitchesThisMonth', () => {
-//   it('should get the correct number of pitches', () => {
-//     const todaysDate = new Date("January 10, 2020")
-//     const pitches = getPitchesThisMonth(climbs, projects, attempts, todaysDate)
-//     expect(pitches).toBe(8)
-//   })
-// })
-
-// describe('getTotalDaysThisYear', () => {
-//   it('should get the correct days', () => {
-//     const todaysDate = new Date("January 10, 2020")
-//     const days = getTotalDaysThisYear(climbs, projects, attempts, todaysDate)
-//     expect(days).toBe(4)
-//   })
-// })
-
-// describe('sortGrades', () => {
-//   const gradesArray = [
-//     '5.12d', '5.9', '5.12a', '5.10a', '5.10b', '5.6', '5.10a'
-//   ]
-//   const sortedArray = [
-//     '5.6', '5.9', '5.10a', '5.10a', '5.10b', '5.12a', '5.12d'
-//   ]
-
-//   const result = sortGrades(gradesArray)
-//   expect(result).toEqual(sortedArray)
-// })
-
-// describe('getHighestRedpointGrade', () => {
-//   const grade = getHighestRedpointGrade(climbs, projects)
-//   expect(grade).toBe('5.12a')
-// })
+jest.mock('../climb.queries')
+jest.mock('../attempt.queries')
 
 describe('getNumericStatistics', () => {
   it('should aggregate all data', () => {
@@ -58,5 +26,17 @@ describe('getNumericStatistics', () => {
       totalDaysThisYear: 4,
       pitchesThisMonth: 7
     })
+  })
+})
+
+describe('getGradesBarChart', () => {
+  it('should aggregate data', async () => {
+    climbsGradeAttemptCountsAgg.mockReturnValue(climbsAgg)
+    attemptsProjectCountsAgg.mockReturnValue(attemptsAgg)
+
+    const expectedResult = gradesChart
+    const userId = '1'
+    const chart = await getGradesBarChart(userId)
+    expect(chart).toEqual(expectedResult)
   })
 })

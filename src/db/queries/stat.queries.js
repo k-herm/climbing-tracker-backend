@@ -1,12 +1,12 @@
-const Project = require('../models/project.model')
-const Climb = require('../models/climb.model')
-const Attempt = require('../models/attempt.model')
+const { climbsGradeAttemptCountsAgg } = require('./climb.queries')
+const { attemptsProjectCountsAgg } = require('./attempt.queries')
+
 const {
   dateString,
   isThisMonth,
   getHigherGrade,
   sortArrayOfObjectsByGrade
-} = require('../utils')
+} = require('./utils')
 
 const getNumericStatistics = (climbs, projects, attempts, date) => {
   const data = {
@@ -76,63 +76,9 @@ const getNumericStatistics = (climbs, projects, attempts, date) => {
   return data
 }
 
-const climbsGradeAttemptCountsAgg = (userId) => (
-  Climb.aggregate()
-    .match({ userId, send: true })
-    .group({
-      _id: { grade: '$grade', attempt: '$attempt' },
-      count: { $sum: 1 }
-    })
-    .group({
-      _id: '$_id.grade',
-      count: { $sum: '$count' },
-      attempts: {
-        $addToSet: {
-          _id: '$_id.attempt',
-          count: '$count'
-        }
-      }
-    })
-)
-
-const attemptsProjectCountsAgg = (userId) => (
-  Attempt.aggregate()
-    .match({ userId, falls: 0, takes: 0 })
-    .group({
-      _id: { project: '$projectId', attempt: '$attemptType' },
-      count: { $sum: 1 }
-    })
-    .group({
-      _id: '$_id.project',
-      count: { $sum: '$count' },
-      attempts: {
-        $addToSet: {
-          _id: '$_id.attempt',
-          count: '$count'
-        }
-      }
-    })
-    .lookup({
-      from: 'projects',
-      localField: '_id',
-      foreignField: '_id',
-      as: 'projectData'
-    })
-)
-
-const getChartData = async (userId, projects) => {
-  //need to include project data
+const getGradesBarChart = async (userId) => {
   const climbsAgg = await climbsGradeAttemptCountsAgg(userId)
   const attemptsAgg = await attemptsProjectCountsAgg(userId)
-
-  const gradesChart = climbsAgg.map(grade => ({
-    grade: grade._id,
-    count: grade.count,
-    attempts: grade.attempts.map(attempt => ({
-      attemptType: attempt._id,
-      count: attempt.count
-    }))
-  }))
 
   const projectsAgg = attemptsAgg.map((project) => ({
     grade: project.projectData[0].grade,
@@ -143,126 +89,37 @@ const getChartData = async (userId, projects) => {
     }))
   }))
 
-  // projectsAgg.forEach(project => {
-  //   const res = gradesChart.find((climb) => climb.grade === project.grade)
-  //   res.count += project.count
+  const gradesChart = climbsAgg.map(grade => ({
+    grade: grade._id,
+    count: grade.count,
+    attempts: grade.attempts.map(attempt => ({
+      attemptType: attempt._id,
+      count: attempt.count
+    }))
+  }))
 
-  // })
+  projectsAgg.forEach((project) => {
+    const climb = gradesChart.find((grade) => project.grade === grade.grade)
+    if (climb) {
+      climb.count += project.count
+      project.attempts.forEach((attempt) => {
+        const foundAttempt = climb.attempts.find((type) => type.attemptType === attempt.attemptType)
+        if (foundAttempt) {
+          foundAttempt.count += attempt.count
+        } else {
+          climb.attempts.push(attempt)
+        }
+      })
+    } else {
+      gradesChart.push(project)
+    }
+  })
+
   sortArrayOfObjectsByGrade(gradesChart, 'grade')
-  // const styleCounts = async ()
-
-
-  console.log(JSON.stringify(projectsAgg, null, 2));
-  return {
-    gradesChart
-  }
+  return gradesChart
 }
 
-
-// const getTotalVertical = (climbs, projects, attempts) => {
-//   let total = climbs.reduce((acc, curr) => acc + curr.totalLength, 0)
-//   projects.forEach(project => {
-//     if (project.completedDate) total += project.totalLength
-//     const totalAttempts = attempts.filter(attempt => attempt.projectId === project._id).length
-//     total += project.totalLength * totalAttempts
-//   })
-
-//   return total
-// }
-
-// const getPitchesThisMonth = (climbs, projects, attempts, todaysDate) => {
-//   const isThisMonth = (date) => {
-//     const today = new Date(todaysDate)
-//     const thisMonth = today.getMonth()
-//     const thisYear = today.getFullYear()
-//     return date.getMonth() === thisMonth && date.getFullYear() === thisYear
-//   }
-
-//   const getNumberPitches = (arr) =>
-//     arr.reduce((acc, curr) => acc + curr.numberPitches, 0)
-
-//   let total = 0
-
-//   climbs.forEach(climb => {
-//     const climbDate = new Date(climb.completedDate)
-//     if (isThisMonth(climbDate)) {
-//       total += getNumberPitches(climb.pitches)
-//     }
-//   })
-
-//   projects.forEach(project => {
-//     if (project.completedDate) {
-//       const completedDate = new Date(project.completedDate)
-//       if (isThisMonth(completedDate)) {
-//         total += getNumberPitches(project.pitches)
-//       }
-//     }
-
-//     attempts.forEach(attempt => {
-//       if (attempt.projectId === project._id && isThisMonth(attempt.date)) {
-//         total += getNumberPitches(project.pitches)
-//       }
-//     })
-//   })
-
-//   return total
-// }
-
-// const getTotalDaysThisYear = (climbs, projects, attempts, todaysDate) => {
-//   const today = new Date(todaysDate);
-//   const thisYear = today.getFullYear();
-
-//   const totalDays = []
-
-//   const dateString = (date) => `${date.getMonth()} ${date.getDate()}`
-
-//   const isNewDate = (date) =>
-//     date.getFullYear() === thisYear && !totalDays.includes(dateString(date))
-
-//   climbs.forEach(climb => {
-//     const climbDate = new Date(climb.completedDate)
-//     if (isNewDate(climbDate)) {
-//       totalDays.push(dateString(climbDate))
-//     }
-//   })
-
-//   projects.forEach(project => {
-//     if (project.completedDate) {
-//       if (isNewDate(project.completedDate)) {
-//         totalDays.push(dateString(project.completedDate))
-//       }
-//     }
-//   })
-
-//   attempts.forEach(attempt => {
-//     if (isNewDate(attempt.date)) {
-//       totalDays.push(dateString(attempt.date))
-//     }
-//   })
-
-//   return totalDays.length
-// }
-
-// const getHighestRedpointGrade = (climbs, projects) => {
-//   const climbRedpoints = climbs.filter(climb => climb.send && climb.attempt !== 'Top Rope')
-//     .map(climb => climb.grade);
-
-//   const projectRedpoints = projects.filter(project => project.completedDate)
-//     .map(project => project.grade)
-
-//   const totalRedpoints = [...climbRedpoints, ...projectRedpoints]
-
-//   const allGrades = sortGrades(totalRedpoints)
-//   if (allGrades.length) return allGrades[allGrades.length - 1]
-//   return null
-// }
-
 module.exports = {
-  // getTotalVertical,
-  // getPitchesThisMonth,
-  // getTotalDaysThisYear,
-  // getHighestRedpointGrade,
-  // sortGrades,
   getNumericStatistics,
-  getChartData
+  getGradesBarChart
 }
