@@ -14,10 +14,20 @@ const getAllUserClimbs = async (userId) => {
 
 const climbsGradeAttemptCountsAgg = (userId) => (
   Climb.aggregate()
-    .match({ userId, send: true })
+    .match({ userId })
     .group({
-      _id: { grade: '$grade', attempt: '$attempt' },
+      _id: { grade: '$grade', attempt: '$attempt', send: '$send' },
       count: { $sum: 1 }
+    })
+    .group({
+      _id: { grade: '$_id.grade', attempt: '$_id.attempt' },
+      count: { $sum: '$count' },
+      send: {
+        $addToSet: {
+          _id: '$_id.send',
+          count: '$count'
+        }
+      }
     })
     .group({
       _id: '$_id.grade',
@@ -25,7 +35,8 @@ const climbsGradeAttemptCountsAgg = (userId) => (
       attempts: {
         $addToSet: {
           _id: '$_id.attempt',
-          count: '$count'
+          count: '$count',
+          send: '$send'
         }
       }
     })

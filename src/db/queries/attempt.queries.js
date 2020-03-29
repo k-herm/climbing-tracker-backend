@@ -26,7 +26,7 @@ const getAllUserAttempts = async (userId) => {
 
 const attemptsProjectCountsAgg = (userId) => (
   Attempt.aggregate()
-    .match({ userId, falls: 0, takes: 0 })
+    .match({ userId })
     .group({
       _id: { project: '$projectId', attempt: '$attemptType' },
       count: { $sum: 1 }

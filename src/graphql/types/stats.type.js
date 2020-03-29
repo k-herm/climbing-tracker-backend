@@ -90,8 +90,8 @@ const DataValues = new GraphQLObjectType({
     date: {
       type: GraphQLDate
     },
-    send: {
-      type: GraphQLBoolean
+    sends: {
+      type: GraphQLInt
     },
     indoor: {
       type: GraphQLBoolean
