@@ -8,7 +8,7 @@ const {
 const { GraphQLDate } = require('graphql-iso-date')
 const { PitchInput: PitchType } = require('../types/climb.type')
 const { Project: ProjectType } = require('../types/project.type')
-const { RouteStyleEnum, GradeEnum } = require('../types/enums.type')
+const { RouteStyleEnum, GradeEnum, ClimbStyleEnum } = require('../types/enums.type')
 const Project = require('../../db/models/project.model')
 
 const addProject = {
@@ -40,7 +40,11 @@ const addProject = {
     },
     routeStyle: {
       type: new GraphQLList(RouteStyleEnum),
-      description: 'List of Projecting styles'
+      description: 'List of projecting styles'
+    },
+    climbStyle: {
+      type: ClimbStyleEnum,
+      description: 'Style of climbing'
     }
   },
   resolve: async (src, args, ctx, info) => {

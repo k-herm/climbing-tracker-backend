@@ -1,21 +1,9 @@
 const Attempt = require('../models/attempt.model')
 
-const getAllProjectAttempts = async (userId, projectId) => {
+const getAllUserAttempts = async (userId, filters = {}) => {
   try {
-    const attempts = await Attempt.find({ userId, projectId })
+    const attempts = await Attempt.find({ userId, ...filters })
       .sort({ date: 'desc' })
-
-    if (!attempts) return []
-    return attempts
-  } catch (error) {
-    throw new Error(error.name)
-  }
-}
-
-const getAllUserAttempts = async (userId) => {
-  try {
-    const attempts = await Attempt.find({ userId })
-      .sort({ projectId: 'desc' })
 
     if (!attempts) return []
     return attempts
@@ -51,6 +39,5 @@ const attemptsProjectCountsAgg = (userId) => (
 
 module.exports = {
   attemptsProjectCountsAgg,
-  getAllProjectAttempts,
   getAllUserAttempts
 }

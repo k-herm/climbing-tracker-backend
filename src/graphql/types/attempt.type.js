@@ -1,7 +1,7 @@
 const {
   GraphQLObjectType,
-  GraphQLInt,
   GraphQLID,
+  GraphQLBoolean,
   GraphQLNonNull,
 } = require('graphql')
 const { GraphQLDate } = require('graphql-iso-date')
@@ -19,19 +19,19 @@ const Attempt = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID)
     },
     projectId: {
-      type: new GraphQLNonNull(GraphQLID)
+      type: GraphQLID
+    },
+    goalId: {
+      type: GraphQLID
     },
     date: {
       type: GraphQLDate
     },
-    falls: {
-      type: GraphQLInt
-    },
-    takes: {
-      type: GraphQLInt
-    },
     attemptType: {
       type: new GraphQLNonNull(AttemptEnum)
+    },
+    send: {
+      type: new GraphQLNonNull(GraphQLBoolean)
     }
   })
 })

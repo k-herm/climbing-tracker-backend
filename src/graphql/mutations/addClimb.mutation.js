@@ -11,7 +11,8 @@ const { Climb: ClimbType, PitchInput: PitchType } = require('../types/climb.type
 const {
   AttemptEnum,
   RouteStyleEnum,
-  GradeEnum
+  GradeEnum,
+  ClimbStyleEnum
 } = require('../types/enums.type')
 const Climb = require('../../db/models/climb.model')
 
@@ -46,6 +47,10 @@ const addClimb = {
     routeStyle: {
       type: new GraphQLList(RouteStyleEnum),
       description: 'List of climbing styles'
+    },
+    climbStyle: {
+      type: new GraphQLNonNull(ClimbStyleEnum),
+      description: 'Style of climbing'
     },
     attempt: {
       type: new GraphQLNonNull(AttemptEnum),

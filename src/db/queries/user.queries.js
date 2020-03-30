@@ -22,16 +22,16 @@ const signin = async (email, password) => {
 }
 
 const getUserData = async (userId) => {
-  const p = getAllUserProjects(userId)
-  const c = getAllUserClimbs(userId)
-  const a = getAllUserAttempts(userId)
-  const results = await Promise.all([p, c, a])
+  // const p = getAllUserProjects(userId)
+  // const c = getAllUserClimbs(userId)
+  // const a = getAllUserAttempts(userId)
+  // const results = await Promise.all([p, c, a])
 
-  const projects = results[0]
-  const climbs = results[1]
-  const attempts = results[2]
+  // const projects = results[0]
+  // const climbs = results[1]
+  // const attempts = results[2]
 
-  return { projects, climbs, attempts }
+  // return { projects, climbs, attempts }
 }
 
 module.exports = {

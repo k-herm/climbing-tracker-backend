@@ -7,22 +7,20 @@ const attemptSchema = new Schema({
   },
   projectId: {
     type: Schema.Types.ObjectId,
-    required: true
+  },
+  goalId: {
+    type: Schema.Types.ObjectId,
   },
   date: {
     type: Date,
     default: new Date()
   },
-  falls: {
-    type: Number,
-    default: 0
-  },
-  takes: {
-    type: Number,
-    default: 0
-  },
   attemptType: {
     type: String,
+    required: true
+  },
+  send: {
+    type: Boolean,
     required: true
   }
 })

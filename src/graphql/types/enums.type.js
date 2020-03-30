@@ -72,7 +72,7 @@ const climbStyleValues = {
   values: {
     trad: { value: 'Trad' },
     sport: { value: 'Sport' },
-    // boulder: { value: 'Boulder' }
+    boulder: { value: 'Boulder' }
   }
 }
 const ClimbStyleEnum = new GraphQLEnumType(climbStyleValues)

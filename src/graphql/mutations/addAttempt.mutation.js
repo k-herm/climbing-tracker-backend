@@ -1,8 +1,8 @@
 const {
+  GraphQLBoolean,
   GraphQLError,
   GraphQLNonNull,
-  GraphQLID,
-  GraphQLInt
+  GraphQLID
 } = require('graphql')
 const { GraphQLDate } = require('graphql-iso-date')
 
@@ -14,24 +14,24 @@ const addAttempt = {
   type: AttemptType,
   args: {
     projectId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'Project Id'
+    },
+    goalId: {
+      type: GraphQLID,
+      description: 'Goal Id'
     },
     date: {
       type: GraphQLDate,
       description: 'Date attempted'
     },
-    falls: {
-      type: GraphQLInt,
-      description: 'Number of falls'
-    },
-    takes: {
-      type: GraphQLInt,
-      description: 'Number of takes'
-    },
     attemptType: {
       type: new GraphQLNonNull(AttemptEnum),
       description: 'Style of attempt'
+    },
+    send: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'climb without takes or falls'
     }
   },
   resolve: async (src, args, ctx, info) => {
