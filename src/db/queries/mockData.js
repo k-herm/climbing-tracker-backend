@@ -75,22 +75,32 @@ const projects = [
 const attempts = [
   {
     projectId: 1,
+    send: false,
+    attemptType: 'Redpoint',
     date: new Date('January 1, 2020')
   },
   {
     projectId: 1,
+    send: true,
+    attemptType: 'Redpoint',
     date: new Date('January 2, 2020')
   },
   {
     projectId: 3,
+    send: false,
+    attemptType: 'Redpoint',
     date: new Date('December 1, 2019')
   },
   {
     projectId: 3,
+    send: true,
+    attemptType: 'Redpoint',
     date: new Date('December 5, 2019')
   },
   {
     projectId: 4,
+    send: false,
+    attemptType: 'Top Rope',
     date: new Date('January 4, 2020')
   }
 ]
@@ -160,32 +170,44 @@ const climbsAgg = [
   {
     _id: '5.6',
     count: 3,
-    attempts: [
-      {
-        _id: 'Top Rope',
-        count: 3
-      }
-    ]
+    attempts: [{
+      _id: 'Top Rope',
+      count: 3,
+      send: [
+        {
+          _id: true,
+          count: 2
+        },
+        {
+          _id: false,
+          count: 1
+        }
+      ]
+    }]
   },
   {
     _id: '5.12d',
     count: 1,
-    attempts: [
-      {
-        _id: 'Onsight',
+    attempts: [{
+      _id: 'Onsight',
+      count: 1,
+      send: [{
+        _id: false,
         count: 1
-      }
-    ]
+      }]
+    }]
   },
   {
     _id: '5.10c',
     count: 1,
-    attempts: [
-      {
-        _id: 'Redpoint',
+    attempts: [{
+      _id: 'Redpoint',
+      count: 1,
+      send: [{
+        _id: true,
         count: 1
-      }
-    ]
+      }]
+    }]
   },
   {
     _id: '5.8',
@@ -193,15 +215,39 @@ const climbsAgg = [
     attempts: [
       {
         _id: 'Redpoint',
-        count: 3
+        count: 3,
+        send: [
+          {
+            _id: true,
+            count: 2
+          },
+          {
+            _id: false,
+            count: 1
+          }
+        ]
       },
       {
         _id: 'Top Rope',
-        count: 1
+        count: 1,
+        send: [{
+          _id: true,
+          count: 1
+        }]
       },
       {
         _id: 'Onsight',
-        count: 2
+        count: 2,
+        send: [
+          {
+            _id: true,
+            count: 1
+          },
+          {
+            _id: false,
+            count: 1
+          }
+        ]
       }
     ]
   },
@@ -211,7 +257,11 @@ const climbsAgg = [
     attempts: [
       {
         _id: 'Redpoint',
-        count: 1
+        count: 1,
+        send: [{
+          _id: false,
+          count: 1
+        }]
       }
     ]
   }
@@ -224,7 +274,11 @@ const attemptsAgg = [
     attempts: [
       {
         _id: 'Top Rope',
-        count: 1
+        count: 1,
+        send: [{
+          _id: true,
+          count: 1
+        }]
       }
     ],
     projectData: [
@@ -248,11 +302,25 @@ const attemptsAgg = [
     attempts: [
       {
         _id: 'Top Rope',
-        count: 5
+        count: 5,
+        send: [
+          {
+            _id: true,
+            count: 3
+          },
+          {
+            _id: false,
+            count: 2
+          }
+        ]
       },
       {
         _id: 'Redpoint',
-        count: 1
+        count: 1,
+        send: [{
+          _id: true,
+          count: 1
+        }]
       }
     ],
     projectData: [
@@ -282,7 +350,8 @@ const gradesChart = [
     count: 3,
     attempts: [{
       attemptType: 'Top Rope',
-      count: 3
+      count: 3,
+      sendCount: 2
     }]
   },
   {
@@ -291,15 +360,18 @@ const gradesChart = [
     attempts: [
       {
         attemptType: 'Redpoint',
-        count: 3
+        count: 3,
+        sendCount: 2
       },
       {
         attemptType: 'Top Rope',
-        count: 1
+        count: 1,
+        sendCount: 1
       },
       {
         attemptType: 'Onsight',
-        count: 2
+        count: 2,
+        sendCount: 1
       }
 
     ]
@@ -310,11 +382,13 @@ const gradesChart = [
     attempts: [
       {
         attemptType: 'Redpoint',
-        count: 1
+        count: 1,
+        sendCount: 0
       },
       {
         attemptType: 'Top Rope',
-        count: 1
+        count: 1,
+        sendCount: 1
       },
     ]
   },
@@ -324,7 +398,8 @@ const gradesChart = [
     attempts: [
       {
         attemptType: 'Redpoint',
-        count: 1
+        count: 1,
+        sendCount: 1
       }
     ]
   },
@@ -334,11 +409,13 @@ const gradesChart = [
     attempts: [
       {
         attemptType: 'Top Rope',
-        count: 5
+        count: 5,
+        sendCount: 3
       },
       {
         attemptType: 'Redpoint',
-        count: 1
+        count: 1,
+        sendCount: 1
       }
     ]
   },
@@ -348,7 +425,8 @@ const gradesChart = [
     attempts: [
       {
         attemptType: 'Onsight',
-        count: 1
+        count: 1,
+        sendCount: 0
       }
     ]
   },

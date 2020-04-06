@@ -57,7 +57,7 @@ const NumericStatistics = new GraphQLObjectType({
 const ChartData = new GraphQLObjectType({
   name: 'ChartData',
   fields: () => ({
-    gradesBarChart: {
+    gradesChart: {
       type: new GraphQLNonNull(GraphQLList(DataValues))
     },
     // climbStyleChart: {

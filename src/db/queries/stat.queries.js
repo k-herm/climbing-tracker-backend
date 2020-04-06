@@ -76,11 +76,10 @@ const getNumericStatistics = (climbs, projects, attempts, date) => {
   return data
 }
 
-const getGradesBarChart = async (userId) => {
+const getGradesChart = async (userId) => {
   const climbsAgg = await climbsGradeAttemptCountsAgg(userId)
-  console.log("climbs:", JSON.stringify(climbsAgg, null, 2));
   const attemptsAgg = await attemptsProjectCountsAgg(userId)
-  console.log("attempts:", JSON.stringify(attemptsAgg, null, 2));
+
   const projectsAgg = attemptsAgg.map((project) => ({
     grade: project.projectData[0].grade,
     count: project.count,
@@ -129,7 +128,12 @@ const getGradesBarChart = async (userId) => {
   return gradesChart
 }
 
+const getClimbStyleChart = (userId) => {
+  return []
+}
+
 module.exports = {
   getNumericStatistics,
-  getGradesBarChart
+  getGradesChart,
+  getClimbStyleChart
 }

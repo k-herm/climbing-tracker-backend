@@ -1,6 +1,6 @@
 const {
   getNumericStatistics,
-  getGradesBarChart
+  getGradesChart
 } = require('../stat.queries')
 const {
   climbs,
@@ -36,7 +36,7 @@ describe('getGradesBarChart', () => {
 
     const expectedResult = gradesChart
     const userId = '1'
-    const chart = await getGradesBarChart(userId)
+    const chart = await getGradesChart(userId)
     expect(chart).toEqual(expectedResult)
   })
 })
