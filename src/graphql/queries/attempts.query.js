@@ -16,10 +16,6 @@ const attempts = {
       type: GraphQLID,
       description: 'Project Id'
     },
-    goalId: {
-      type: GraphQLID,
-      description: 'Goal Id'
-    },
     attemptType: {
       type: AttemptEnum,
       description: 'type of attempt'

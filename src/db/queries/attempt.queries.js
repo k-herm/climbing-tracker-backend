@@ -16,16 +16,27 @@ const attemptsProjectCountsAgg = (userId) => (
   Attempt.aggregate()
     .match({ userId })
     .group({
-      _id: { project: '$projectId', attempt: '$attemptType' },
+      _id: { projectId: '$projectId', attempt: '$attemptType', send: '$send' },
       count: { $sum: 1 }
     })
     .group({
-      _id: '$_id.project',
+      _id: { projectId: '$_id.projectId', attempt: '$_id.attempt' },
+      count: { $sum: '$count' },
+      send: {
+        $addToSet: {
+          _id: '$_id.send',
+          count: '$count'
+        }
+      }
+    })
+    .group({
+      _id: '$_id.projectId',
       count: { $sum: '$count' },
       attempts: {
         $addToSet: {
           _id: '$_id.attempt',
-          count: '$count'
+          count: '$count',
+          send: '$send'
         }
       }
     })

@@ -17,10 +17,6 @@ const addAttempt = {
       type: GraphQLID,
       description: 'Project Id'
     },
-    goalId: {
-      type: GraphQLID,
-      description: 'Goal Id'
-    },
     date: {
       type: GraphQLDate,
       description: 'Date attempted'

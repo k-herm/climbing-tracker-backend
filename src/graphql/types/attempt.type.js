@@ -21,9 +21,6 @@ const Attempt = new GraphQLObjectType({
     projectId: {
       type: GraphQLID
     },
-    goalId: {
-      type: GraphQLID
-    },
     date: {
       type: GraphQLDate
     },

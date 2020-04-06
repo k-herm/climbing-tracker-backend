@@ -8,9 +8,6 @@ const attemptSchema = new Schema({
   projectId: {
     type: Schema.Types.ObjectId,
   },
-  goalId: {
-    type: Schema.Types.ObjectId,
-  },
   date: {
     type: Date,
     default: new Date()

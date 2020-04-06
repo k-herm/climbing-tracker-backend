@@ -57,12 +57,12 @@ const NumericStatistics = new GraphQLObjectType({
 const ChartData = new GraphQLObjectType({
   name: 'ChartData',
   fields: () => ({
-    gradesChart: {
+    gradesBarChart: {
       type: new GraphQLNonNull(GraphQLList(DataValues))
     },
-    climbStyleChart: {
-      type: new GraphQLNonNull(GraphQLList(DataValues))
-    }
+    // climbStyleChart: {
+    //   type: new GraphQLNonNull(GraphQLList(DataValues))
+    // }
   })
 })
 
@@ -106,6 +106,9 @@ const AttemptValues = new GraphQLObjectType({
       type: new GraphQLNonNull(AttemptEnum)
     },
     count: {
+      type: new GraphQLNonNull(GraphQLInt)
+    },
+    sendCount: {
       type: new GraphQLNonNull(GraphQLInt)
     }
   })

@@ -78,26 +78,33 @@ const getNumericStatistics = (climbs, projects, attempts, date) => {
 
 const getGradesBarChart = async (userId) => {
   const climbsAgg = await climbsGradeAttemptCountsAgg(userId)
+  console.log("climbs:", JSON.stringify(climbsAgg, null, 2));
   const attemptsAgg = await attemptsProjectCountsAgg(userId)
   console.log("attempts:", JSON.stringify(attemptsAgg, null, 2));
   const projectsAgg = attemptsAgg.map((project) => ({
     grade: project.projectData[0].grade,
     count: project.count,
-    sends: project.projectData[0].completedDate ? 1 : 0,
-    attempts: project.attempts.map((attempt) => ({
-      attemptType: attempt._id,
-      count: attempt.count
-    }))
+    attempts: project.attempts.map((attempt) => {
+      const send = attempt.send.find(bool => bool._id === true)
+      return {
+        attemptType: attempt._id,
+        count: attempt.count,
+        sendCount: send ? send.count : 0
+      }
+    })
   }))
 
   const gradesChart = climbsAgg.map(grade => ({
     grade: grade._id,
     count: grade.count,
-    attempts: grade.attempts.map(attempt => ({
-      attemptType: attempt._id,
-      count: attempt.count,
-      sends: attempt.send.find(bool => bool._id === true).count || 0
-    }))
+    attempts: grade.attempts.map(attempt => {
+      const send = attempt.send.find(bool => bool._id === true)
+      return {
+        attemptType: attempt._id,
+        count: attempt.count,
+        sendCount: send ? send.count : 0
+      }
+    })
   }))
 
   projectsAgg.forEach((project) => {
@@ -108,6 +115,7 @@ const getGradesBarChart = async (userId) => {
         const foundAttempt = climb.attempts.find((type) => type.attemptType === attempt.attemptType)
         if (foundAttempt) {
           foundAttempt.count += attempt.count
+          foundAttempt.sendCount += attempt.sendCount
         } else {
           climb.attempts.push(attempt)
         }
