@@ -60,9 +60,9 @@ const ChartData = new GraphQLObjectType({
     gradesChart: {
       type: new GraphQLNonNull(GraphQLList(DataValues))
     },
-    // climbStyleChart: {
-    //   type: new GraphQLNonNull(GraphQLList(DataValues))
-    // }
+    climbStyleChart: {
+      type: new GraphQLNonNull(GraphQLList(DataValues))
+    }
   })
 })
 
@@ -72,8 +72,11 @@ const DataValues = new GraphQLObjectType({
     attempts: {
       type: new GraphQLList(AttemptValues)
     },
+    attempt: {
+      type: AttemptEnum
+    },
     routeStyle: {
-      type: RouteStyleEnum
+      type: new GraphQLList(RouteStyleEnum)
     },
     climbStyle: {
       type: ClimbStyleEnum
@@ -90,8 +93,8 @@ const DataValues = new GraphQLObjectType({
     date: {
       type: GraphQLDate
     },
-    sends: {
-      type: GraphQLInt
+    send: {
+      type: GraphQLBoolean
     },
     indoor: {
       type: GraphQLBoolean

@@ -53,7 +53,9 @@ const getNumericStatistics = (climbs, projects, attempts, date) => {
       data.highestRedpointGrade = getHigherGrade(data.highestRedpointGrade, project.grade)
     }
 
-    const totalAttempts = attempts.filter(attempt => attempt.projectId === project._id)
+    const totalAttempts = attempts.filter(attempt =>
+      attempt.projectId.toString() === project._id.toString()
+    )
     //vertical
     data.totalVertical += totalAttempts.length * project.totalLength
     totalAttempts.forEach(attempt => {
@@ -128,8 +130,31 @@ const getGradesChart = async (userId) => {
   return gradesChart
 }
 
-const getClimbStyleChart = (userId) => {
-  return []
+const getClimbStyleChart = (climbs, projects, attempts) => {
+  const climbsData = climbs.map(climb => ({
+    grade: climb.grade,
+    date: climb.completedDate,
+    routeStyle: climb.routeStyle,
+    climbStyle: climb.climbStyle,
+    attempt: climb.attempt,
+    send: climb.send
+  }))
+
+  projects.forEach(project => {
+    const projectAttempts = attempts.filter(attempt =>
+      attempt.projectId.toString() === project._id.toString()
+    )
+    projectAttempts.forEach(attempt => climbsData.push({
+      grade: project.grade,
+      date: attempt.date,
+      routeStyle: project.routeStyle,
+      climbStyle: project.climbStyle,
+      attempt: attempt.attemptType,
+      send: attempt.send
+    }))
+  })
+
+  return climbsData.sort((a, b) => a.date - b.date)
 }
 
 module.exports = {

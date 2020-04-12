@@ -1,9 +1,9 @@
 const Climb = require('../models/climb.model')
 
-const getAllUserClimbs = async (userId) => {
+const getAllUserClimbs = async (userId, filter = {}) => {
   try {
-    const climbs = await Climb.find({ userId })
-      .sort({ completedDate: 'desc' })
+    const climbs = await Climb.find({ userId, ...filter })
+      .sort({ completedDate: 'asc' })
 
     if (!climbs) return []
     return climbs

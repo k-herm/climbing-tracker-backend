@@ -27,7 +27,11 @@ const stats = {
         pitchesThisMonth
       } = getNumericStatistics(climbs, projects, attempts, date)
       const gradesChart = await getGradesChart(ctx.userId)
-      const climbStyleChart = await getClimbStyleChart(ctx.userId)
+      const climbStyleChart = getClimbStyleChart(
+        climbs,
+        projects,
+        attempts
+      )
 
       return {
         userId: ctx.userId,

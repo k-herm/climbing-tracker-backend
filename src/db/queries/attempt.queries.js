@@ -3,7 +3,7 @@ const Attempt = require('../models/attempt.model')
 const getAllUserAttempts = async (userId, filters = {}) => {
   try {
     const attempts = await Attempt.find({ userId, ...filters })
-      .sort({ date: 'desc' })
+      .sort({ date: 'asc' })
 
     if (!attempts) return []
     return attempts
