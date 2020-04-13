@@ -7,7 +7,8 @@ const {
   getHigherGrade,
   sortArrayOfObjectsByGrade,
   getMidMonthDate,
-  addOneMonth
+  addOneMonth,
+  getGradeCategories
 } = require('./utils')
 
 const getNumericStatistics = (climbs, projects, attempts, date) => {
@@ -135,7 +136,10 @@ const getGradesChart = async (userId) => {
 
   return {
     gradesChart,
-    otherData: { highestCount }
+    otherData: {
+      highestCount,
+      gradeRange: getGradeCategories(gradesChart)
+    }
   }
 }
 
@@ -184,7 +188,10 @@ const getClimbStyleChart = (climbs, projects, attempts) => {
   sortArrayOfObjectsByGrade(climbsData, 'grade')
   return {
     climbStyleChart: climbsData,
-    otherData: { dateRange }
+    otherData: {
+      dateRange,
+      gradeRange: getGradeCategories(climbsData)
+    }
   }
 }
 

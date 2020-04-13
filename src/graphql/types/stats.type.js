@@ -147,6 +147,9 @@ const OtherData = new GraphQLObjectType({
     },
     dateRange: {
       type: new GraphQLList(GraphQLDate)
+    },
+    gradeRange: {
+      type: new GraphQLList(GradeEnum)
     }
   })
 })
