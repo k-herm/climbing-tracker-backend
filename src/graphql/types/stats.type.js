@@ -26,7 +26,17 @@ const Stats = new GraphQLObjectType({
       type: NumericStatistics
     },
     chartData: {
-      type: ChartData
+      type: new GraphQLObjectType({
+        name: 'ChartData',
+        fields: () => ({
+          gradesChart: {
+            type: GradesChart
+          },
+          climbStyleChart: {
+            type: ClimbStyleChart
+          }
+        })
+      })
     }
   })
 })
@@ -54,14 +64,26 @@ const NumericStatistics = new GraphQLObjectType({
   })
 })
 
-const ChartData = new GraphQLObjectType({
-  name: 'ChartData',
+const GradesChart = new GraphQLObjectType({
+  name: 'GradesChart',
   fields: () => ({
     gradesChart: {
       type: new GraphQLNonNull(GraphQLList(DataValues))
     },
+    otherData: {
+      type: OtherData
+    }
+  })
+})
+
+const ClimbStyleChart = new GraphQLObjectType({
+  name: 'ClimbStyleChart',
+  fields: () => ({
     climbStyleChart: {
       type: new GraphQLNonNull(GraphQLList(DataValues))
+    },
+    otherData: {
+      type: OtherData
     }
   })
 })
@@ -113,6 +135,18 @@ const AttemptValues = new GraphQLObjectType({
     },
     sendCount: {
       type: new GraphQLNonNull(GraphQLInt)
+    }
+  })
+})
+
+const OtherData = new GraphQLObjectType({
+  name: 'OtherData',
+  fields: () => ({
+    highestCount: {
+      type: GraphQLInt
+    },
+    yearRange: {
+      type: new GraphQLList(GraphQLInt)
     }
   })
 })

@@ -26,8 +26,8 @@ const stats = {
         totalDaysThisYear,
         pitchesThisMonth
       } = getNumericStatistics(climbs, projects, attempts, date)
-      const gradesChart = await getGradesChart(ctx.userId)
-      const climbStyleChart = getClimbStyleChart(
+      const { gradesChart, otherData } = await getGradesChart(ctx.userId)
+      const { climbStyleChart, otherData: stylesOtherData } = getClimbStyleChart(
         climbs,
         projects,
         attempts
@@ -42,8 +42,14 @@ const stats = {
           pitchesThisMonth
         },
         chartData: {
-          gradesChart,
-          climbStyleChart
+          gradesChart: {
+            gradesChart,
+            otherData
+          },
+          climbStyleChart: {
+            climbStyleChart,
+            otherData: stylesOtherData
+          }
         }
       }
     } catch (error) {

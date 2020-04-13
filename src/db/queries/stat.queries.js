@@ -127,34 +127,57 @@ const getGradesChart = async (userId) => {
   })
 
   sortArrayOfObjectsByGrade(gradesChart, 'grade')
-  return gradesChart
+  const highestCount = gradesChart.reduce((highest, curr) => (
+    curr.count > highest ? curr.count : highest
+  ), 0)
+
+  return {
+    gradesChart,
+    otherData: { highestCount }
+  }
 }
 
 const getClimbStyleChart = (climbs, projects, attempts) => {
-  const climbsData = climbs.map(climb => ({
-    grade: climb.grade,
-    date: climb.completedDate,
-    routeStyle: climb.routeStyle,
-    climbStyle: climb.climbStyle,
-    attempt: climb.attempt,
-    send: climb.send
-  }))
+  const yearRange = []
+  const climbsData = climbs.map(climb => {
+    const year = climb.completedDate.getFullYear()
+    if (!yearRange.includes(year)) {
+      yearRange.push(year)
+    }
+    return ({
+      grade: climb.grade,
+      date: climb.completedDate,
+      routeStyle: climb.routeStyle,
+      climbStyle: climb.climbStyle,
+      attempt: climb.attempt,
+      send: climb.send
+    })
+  })
 
   projects.forEach(project => {
     const projectAttempts = attempts.filter(attempt =>
       attempt.projectId.toString() === project._id.toString()
     )
-    projectAttempts.forEach(attempt => climbsData.push({
-      grade: project.grade,
-      date: attempt.date,
-      routeStyle: project.routeStyle,
-      climbStyle: project.climbStyle,
-      attempt: attempt.attemptType,
-      send: attempt.send
-    }))
+    projectAttempts.forEach(attempt => {
+      const year = attempt.date.getFullYear()
+      if (!yearRange.includes(year)) {
+        yearRange.push(year)
+      }
+      climbsData.push({
+        grade: project.grade,
+        date: attempt.date,
+        routeStyle: project.routeStyle,
+        climbStyle: project.climbStyle,
+        attempt: attempt.attemptType,
+        send: attempt.send
+      })
+    })
   })
 
-  return climbsData.sort((a, b) => a.date - b.date)
+  return {
+    climbStyleChart: climbsData.sort((a, b) => a.date - b.date),
+    otherData: { yearRange }
+  }
 }
 
 module.exports = {
