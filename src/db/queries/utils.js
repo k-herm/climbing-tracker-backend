@@ -7,6 +7,22 @@ const isThisMonth = (date, todaysDate) => {
 
 const dateString = (date) => `${date.getMonth()} ${date.getDate()}`
 
+const getMidMonthDate = (date) => new Date(
+  date.getFullYear(),
+  date.getMonth(),
+  15
+)
+
+const addOneMonth = (date) => {
+  let month = date.getMonth() + 1
+  let year = date.getFullYear()
+  if (month > 11) {
+    month = 0
+    year += 1
+  }
+  return new Date(year, month, date.getDate())
+}
+
 const sortTwoGrades = (a, b) => {
   const getLetter = (grade) => {
     let letter = ''
@@ -41,8 +57,10 @@ const sortArrayOfObjectsByGrade = (gradesArray, key) =>
   gradesArray.sort((a, b) => sortTwoGrades(a[key], b[key]))
 
 module.exports = {
+  addOneMonth,
   isThisMonth,
   dateString,
+  getMidMonthDate,
   getHigherGrade,
   sortArrayOfObjectsByGrade,
   sortTwoGrades

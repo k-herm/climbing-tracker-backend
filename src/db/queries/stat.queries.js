@@ -5,7 +5,9 @@ const {
   dateString,
   isThisMonth,
   getHigherGrade,
-  sortArrayOfObjectsByGrade
+  sortArrayOfObjectsByGrade,
+  getMidMonthDate,
+  addOneMonth
 } = require('./utils')
 
 const getNumericStatistics = (climbs, projects, attempts, date) => {
@@ -138,31 +140,21 @@ const getGradesChart = async (userId) => {
 }
 
 const getClimbStyleChart = (climbs, projects, attempts) => {
-  const yearRange = []
-  const climbsData = climbs.map(climb => {
-    const year = climb.completedDate.getFullYear()
-    if (!yearRange.includes(year)) {
-      yearRange.push(year)
-    }
-    return ({
-      grade: climb.grade,
-      date: climb.completedDate,
-      routeStyle: climb.routeStyle,
-      climbStyle: climb.climbStyle,
-      attempt: climb.attempt,
-      send: climb.send
-    })
+  const climbsData = climbs.map(climb => ({
+    grade: climb.grade,
+    date: climb.completedDate,
+    routeStyle: climb.routeStyle,
+    climbStyle: climb.climbStyle,
+    attempt: climb.attempt,
+    send: climb.send
   })
+  )
 
   projects.forEach(project => {
     const projectAttempts = attempts.filter(attempt =>
       attempt.projectId.toString() === project._id.toString()
     )
     projectAttempts.forEach(attempt => {
-      const year = attempt.date.getFullYear()
-      if (!yearRange.includes(year)) {
-        yearRange.push(year)
-      }
       climbsData.push({
         grade: project.grade,
         date: attempt.date,
@@ -174,9 +166,25 @@ const getClimbStyleChart = (climbs, projects, attempts) => {
     })
   })
 
+  const climbsByDate = climbsData.sort((a, b) => a.date - b.date)
+  const dateRange = []
+  if (climbsByDate.length) {
+    const firstDate = climbsByDate[0].date
+    const lastDate = climbsByDate[climbsByDate.length - 1].date
+
+    let currDate = getMidMonthDate(firstDate)
+    const endDate = getMidMonthDate(lastDate)
+    while (currDate <= endDate) {
+      dateRange.push(currDate)
+      currDate = addOneMonth(currDate)
+    }
+    dateRange.push(currDate)
+  }
+
+  sortArrayOfObjectsByGrade(climbsData, 'grade')
   return {
-    climbStyleChart: climbsData.sort((a, b) => a.date - b.date),
-    otherData: { yearRange }
+    climbStyleChart: climbsData,
+    otherData: { dateRange }
   }
 }
 

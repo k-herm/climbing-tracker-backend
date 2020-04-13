@@ -145,8 +145,8 @@ const OtherData = new GraphQLObjectType({
     highestCount: {
       type: GraphQLInt
     },
-    yearRange: {
-      type: new GraphQLList(GraphQLInt)
+    dateRange: {
+      type: new GraphQLList(GraphQLDate)
     }
   })
 })
