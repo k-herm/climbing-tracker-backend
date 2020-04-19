@@ -80,7 +80,20 @@ const ClimbStyleChart = new GraphQLObjectType({
   name: 'ClimbStyleChart',
   fields: () => ({
     climbStyleChart: {
-      type: new GraphQLNonNull(GraphQLList(DataValues))
+      type: new GraphQLObjectType({
+        name: 'ClimbStyles',
+        fields: () => ({
+          sport: {
+            type: new GraphQLNonNull(GraphQLList(DataValues))
+          },
+          trad: {
+            type: new GraphQLNonNull(GraphQLList(DataValues))
+          },
+          notSpecified: {
+            type: new GraphQLNonNull(GraphQLList(DataValues))
+          },
+        })
+      })
     },
     otherData: {
       type: OtherData

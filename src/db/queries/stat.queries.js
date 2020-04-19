@@ -186,11 +186,20 @@ const getClimbStyleChart = (climbs, projects, attempts) => {
   }
 
   sortArrayOfObjectsByGrade(climbsData, 'grade')
+  const gradeRange = getGradeCategories(climbsData)
+  const tradData = climbsData.filter(climb => climb.climbStyle === 'Trad')
+  const sportData = climbsData.filter(climb => climb.climbStyle === 'Sport')
+  const noStyleRecorded = climbsData.filter(climb => !climb.climbStyle)
+
   return {
-    climbStyleChart: climbsData,
+    climbStyleChart: {
+      sport: sportData,
+      trad: tradData,
+      notSpecified: noStyleRecorded
+    },
     otherData: {
       dateRange,
-      gradeRange: getGradeCategories(climbsData)
+      gradeRange
     }
   }
 }
