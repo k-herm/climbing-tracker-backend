@@ -21,9 +21,9 @@ const signin = async (email, password) => {
   return user
 }
 
-const getUserData = async (userId) => {
-  const p = getAllUserProjects(userId)
-  const c = getAllUserClimbs(userId)
+const getUserData = async (userId, climbFilters = {}) => {
+  const p = getAllUserProjects(userId, climbFilters)
+  const c = getAllUserClimbs(userId, climbFilters)
   const a = getAllUserAttempts(userId)
   const results = await Promise.all([p, c, a])
 

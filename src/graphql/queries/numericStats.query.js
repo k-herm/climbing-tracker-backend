@@ -2,14 +2,10 @@ const { GraphQLError } = require('graphql')
 const { GraphQLDate } = require('graphql-iso-date')
 
 const { Stats: StatType } = require('../types/stats.type')
-const {
-  getNumericStatistics,
-  getGradesChart,
-  getClimbStyleChart
-} = require('../../db/queries/stat.queries')
+const { getNumericStatistics } = require('../../db/queries/stat.queries')
 const { getUserData } = require('../../db/queries/user.queries')
 
-const stats = {
+const numericStats = {
   type: StatType,
   args: {
     date: {
@@ -26,12 +22,6 @@ const stats = {
         totalDaysThisYear,
         pitchesThisMonth
       } = getNumericStatistics(climbs, projects, attempts, date)
-      const { gradesChart, otherData } = await getGradesChart(ctx.userId)
-      const { climbStyleChart, otherData: stylesOtherData } = getClimbStyleChart(
-        climbs,
-        projects,
-        attempts
-      )
 
       return {
         userId: ctx.userId,
@@ -40,16 +30,6 @@ const stats = {
           highestRedpointGrade,
           totalDaysThisYear,
           pitchesThisMonth
-        },
-        chartData: {
-          gradesChart: {
-            gradesChart,
-            otherData
-          },
-          climbStyleChart: {
-            climbStyleChart,
-            otherData: stylesOtherData
-          }
         }
       }
     } catch (error) {
@@ -60,5 +40,5 @@ const stats = {
 }
 
 module.exports = {
-  stats
+  numericStats
 }
