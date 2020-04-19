@@ -5,9 +5,9 @@ const { journalEntries } = require('./queries/journalEntries.query')
 const { projects } = require('./queries/projects.query')
 const { attempts } = require('./queries/attempts.query')
 const { numericStats } = require('./queries/numericStats.query')
-const { charts } = require('./queries/charts.query')
+const { gradesChart } = require('./queries/gradesChart.query')
 const { goals } = require('./queries/goals.query')
-const { chartsStyleFilter } = require('./queries/chartsStyleFilter')
+const { climbStyleChart } = require('./queries/climbStyleChart.query')
 
 const rootQuery = new GraphQLObjectType({
    name: 'RootQuery',
@@ -18,8 +18,8 @@ const rootQuery = new GraphQLObjectType({
       attempts,
       goals,
       numericStats,
-      charts,
-      chartsStyleFilter,
+      gradesChart,
+      climbStyleChart,
    })
 })
 

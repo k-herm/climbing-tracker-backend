@@ -5,7 +5,7 @@ const { RouteStyleEnum } = require('../types/enums.type')
 const { getClimbStyleChart } = require('../../db/queries/stat.queries')
 const { getUserData } = require('../../db/queries/user.queries')
 
-const chartsStyleFilter = {
+const climbStyleChart = {
   type: StatType,
   args: {
     routeStyle: {
@@ -42,5 +42,5 @@ const chartsStyleFilter = {
 }
 
 module.exports = {
-  chartsStyleFilter
+  climbStyleChart
 }
