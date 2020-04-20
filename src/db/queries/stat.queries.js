@@ -135,7 +135,7 @@ const getGradesChart = async (userId) => {
   ), 0)
 
   return {
-    gradesChart,
+    chartData: gradesChart,
     otherData: {
       highestCount,
       gradeRange: getGradeCategories(gradesChart)
@@ -186,16 +186,14 @@ const getClimbStyleChart = (climbs, projects, attempts) => {
   }
 
   sortArrayOfObjectsByGrade(climbsData, 'grade')
-  const gradeRange = getGradeCategories(climbsData)
+  const gradeRange = climbsData.length ? getGradeCategories(climbsData) : []
   const tradData = climbsData.filter(climb => climb.climbStyle === 'Trad')
   const sportData = climbsData.filter(climb => climb.climbStyle === 'Sport')
-  const noStyleRecorded = climbsData.filter(climb => !climb.climbStyle)
 
   return {
-    climbStyleChart: {
+    chartData: {
       sport: sportData,
       trad: tradData,
-      notSpecified: noStyleRecorded
     },
     otherData: {
       dateRange,

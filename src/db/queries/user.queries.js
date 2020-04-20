@@ -22,8 +22,12 @@ const signin = async (email, password) => {
 }
 
 const getUserData = async (userId, climbFilters = {}) => {
-  const p = getAllUserProjects(userId, climbFilters)
-  const c = getAllUserClimbs(userId, climbFilters)
+  const filters = { ...climbFilters }
+  if (climbFilters.routeStyle) {
+    filters.routeStyle = { $all: climbFilters.routeStyle }
+  }
+  const p = getAllUserProjects(userId, filters)
+  const c = getAllUserClimbs(userId, filters)
   const a = getAllUserAttempts(userId)
   const results = await Promise.all([p, c, a])
 

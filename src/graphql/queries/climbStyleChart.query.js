@@ -19,7 +19,8 @@ const climbStyleChart = {
         filter.routeStyle = routeStyle
       }
       const { projects, climbs, attempts } = await getUserData(ctx.userId, filter)
-      const { climbStyleChart, otherData: stylesOtherData } = getClimbStyleChart(
+
+      const climbStyleChart = getClimbStyleChart(
         climbs,
         projects,
         attempts
@@ -27,12 +28,7 @@ const climbStyleChart = {
 
       return {
         userId: ctx.userId,
-        chartData: {
-          climbStyleChart: {
-            climbStyleChart,
-            otherData: stylesOtherData
-          }
-        }
+        climbStyleChart
       }
     } catch (error) {
       console.log(error.message)

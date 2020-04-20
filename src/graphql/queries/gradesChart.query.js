@@ -7,15 +7,10 @@ const gradesChart = {
   type: StatType,
   resolve: async (src, args, ctx, info) => {
     try {
-      const { gradesChart, otherData } = await getGradesChart(ctx.userId)
+      const gradesChart = await getGradesChart(ctx.userId)
       return {
         userId: ctx.userId,
-        chartData: {
-          gradesChart: {
-            gradesChart,
-            otherData
-          }
-        }
+        gradesChart
       }
     } catch (error) {
       console.log(error.message)

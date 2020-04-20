@@ -25,18 +25,11 @@ const Stats = new GraphQLObjectType({
     numericStatistics: {
       type: NumericStatistics
     },
-    chartData: {
-      type: new GraphQLObjectType({
-        name: 'ChartData',
-        fields: () => ({
-          gradesChart: {
-            type: GradesChart
-          },
-          climbStyleChart: {
-            type: ClimbStyleChart
-          }
-        })
-      })
+    gradesChart: {
+      type: GradesChart
+    },
+    climbStyleChart: {
+      type: ClimbStyleChart
     }
   })
 })
@@ -67,7 +60,7 @@ const NumericStatistics = new GraphQLObjectType({
 const GradesChart = new GraphQLObjectType({
   name: 'GradesChart',
   fields: () => ({
-    gradesChart: {
+    chartData: {
       type: new GraphQLNonNull(GraphQLList(DataValues))
     },
     otherData: {
@@ -79,7 +72,7 @@ const GradesChart = new GraphQLObjectType({
 const ClimbStyleChart = new GraphQLObjectType({
   name: 'ClimbStyleChart',
   fields: () => ({
-    climbStyleChart: {
+    chartData: {
       type: new GraphQLObjectType({
         name: 'ClimbStyles',
         fields: () => ({
@@ -88,10 +81,7 @@ const ClimbStyleChart = new GraphQLObjectType({
           },
           trad: {
             type: new GraphQLNonNull(GraphQLList(DataValues))
-          },
-          notSpecified: {
-            type: new GraphQLNonNull(GraphQLList(DataValues))
-          },
+          }
         })
       })
     },
