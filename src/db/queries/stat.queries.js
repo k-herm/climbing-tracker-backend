@@ -211,9 +211,6 @@ const getClimbStyleChartData = (userId, filter) => {
     _id: 0,
     grade: 1,
     date: 1,
-    routeStyle: 1,
-    climbStyle: 1,
-    attempt: '$attemptType',
     send: 1,
   }, filter)
 
