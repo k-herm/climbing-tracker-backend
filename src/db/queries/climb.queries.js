@@ -12,10 +12,66 @@ const getAllUserClimbs = async (userId, filter = {}) => {
   }
 }
 
-const getClimbsAgg = async (userId, project = {}, filter = {}) => (
+const totalVerticalClimbsAgg = (userId) => (
+  Climb.aggregate()
+    .match({ userId })
+    .group({
+      _id: null,
+      totalLengthSum: { $sum: '$totalLength' }
+    })
+)
+
+// does not filter for future years
+const totalDaysClimbsAgg = (userId, thisYear) => (
+  Climb.aggregate()
+    .match({
+      userId,
+      completedDate: { $gte: thisYear }
+    })
+    .group({
+      _id: { day: { $dayOfYear: '$completedDate' } },
+    })
+    .group({
+      _id: null,
+      totalDaysSum: { $sum: 1 }
+    })
+)
+// does not filter for future years
+const totalPitchesClimbsAgg = (userId, thisMonth) => (
+  Climb.aggregate()
+    .match({
+      userId,
+      completedDate: { $gte: thisMonth }
+    })
+    .addFields({
+      pitches: [{ 'k': 'numberPitches', 'v': '$pitches.numberPitches' }]
+    })
+    .addFields({
+      pitches: { $arrayToObject: '$pitches' }
+    })
+    .project({
+      _id: 0,
+      totalNumberPitches: {
+        $reduce: {
+          input: '$pitches.numberPitches',
+          initialValue: 0,
+          in: {
+            $add: ['$$value', '$$this']
+          }
+        }
+      }
+    })
+    .group({
+      _id: null,
+      totalPitchesSum: { $sum: '$totalNumberPitches' }
+    })
+)
+
+const getClimbsAgg = (userId, project = {}, filter = {}) => (
   Climb.aggregate()
     .match({ userId })
     .match({ ...filter })
+    .sort({ completedDate: 'asc' })
     .project({ ...project })
 )
 
@@ -52,5 +108,8 @@ const climbsGradeAttemptCountsAgg = (userId) => (
 module.exports = {
   climbsGradeAttemptCountsAgg,
   getAllUserClimbs,
-  getClimbsAgg
+  getClimbsAgg,
+  totalVerticalClimbsAgg,
+  totalDaysClimbsAgg,
+  totalPitchesClimbsAgg
 }

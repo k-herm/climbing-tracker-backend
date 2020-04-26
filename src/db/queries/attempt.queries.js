@@ -25,9 +25,9 @@ const attemptsToProjectsAgg = (userId, project = {}, filter = {}) => (
       $mergeObjects: [{ $arrayElemAt: ['$projects', 0] }, '$$ROOT']
     })
     .match({ ...filter })
+    .sort({ completedDate: 'asc' })
     .project({ ...project })
 )
-
 
 const attemptsProjectCountsAgg = (userId) => (
   Attempt.aggregate()
