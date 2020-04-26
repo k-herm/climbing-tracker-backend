@@ -12,6 +12,80 @@ const getAllUserAttempts = async (userId, filters = {}) => {
   }
 }
 
+const totalVerticalAttemptsAgg = (userId) => (
+  Attempt.aggregate()
+    .match({ userId })
+    .lookup({
+      from: 'projects',
+      localField: 'projectId',
+      foreignField: '_id',
+      as: 'projects'
+    })
+    .replaceRoot({
+      $mergeObjects: [{ $arrayElemAt: ['$projects', 0] }, '$$ROOT']
+    })
+    .group({
+      _id: null,
+      totalLengthSum: { $sum: '$totalLength' }
+    })
+)
+
+// does not filter for future years
+const totalDaysAttemptsAgg = (userId, thisYear) => (
+  Attempt.aggregate()
+    .match({
+      userId,
+      date: { $gte: thisYear }
+    })
+    .group({
+      _id: { day: { $dayOfYear: '$date' } },
+    })
+    .group({
+      _id: null,
+      totalDaysSum: { $sum: 1 }
+    })
+)
+
+// does not filter for future years
+const totalPitchesAttemptsAgg = (userId, thisMonth) => (
+  Attempt.aggregate()
+    .match({
+      userId,
+      date: { $gte: thisMonth }
+    })
+    .lookup({
+      from: 'projects',
+      localField: 'projectId',
+      foreignField: '_id',
+      as: 'projects'
+    })
+    .replaceRoot({
+      $mergeObjects: [{ $arrayElemAt: ['$projects', 0] }, '$$ROOT']
+    })
+    .addFields({
+      pitches: [{ 'k': 'numberPitches', 'v': '$pitches.numberPitches' }]
+    })
+    .addFields({
+      pitches: { $arrayToObject: '$pitches' }
+    })
+    .project({
+      _id: 0,
+      totalNumberPitches: {
+        $reduce: {
+          input: '$pitches.numberPitches',
+          initialValue: 0,
+          in: {
+            $add: ['$$value', '$$this']
+          }
+        }
+      }
+    })
+    .group({
+      _id: null,
+      totalPitchesSum: { $sum: '$totalNumberPitches' }
+    })
+)
+
 const attemptsToProjectsAgg = (userId, project = {}, filter = {}) => (
   Attempt.aggregate()
     .match({ userId })
@@ -68,5 +142,8 @@ const attemptsProjectCountsAgg = (userId) => (
 module.exports = {
   attemptsProjectCountsAgg,
   attemptsToProjectsAgg,
-  getAllUserAttempts
+  getAllUserAttempts,
+  totalDaysAttemptsAgg,
+  totalPitchesAttemptsAgg,
+  totalVerticalAttemptsAgg
 }

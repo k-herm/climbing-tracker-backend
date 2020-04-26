@@ -7,12 +7,13 @@ const {
 } = require('./climb.queries')
 const {
   attemptsProjectCountsAgg,
-  attemptsToProjectsAgg
+  attemptsToProjectsAgg,
+  totalVerticalAttemptsAgg,
+  totalDaysAttemptsAgg,
+  totalPitchesAttemptsAgg,
 } = require('./attempt.queries')
 
 const {
-  dateString,
-  isThisMonth,
   getHigherGrade,
   sortArrayOfObjectsByGrade,
   getMidMonthDate,
@@ -23,10 +24,12 @@ const {
 const getNumericStatsData = (userId, date) => {
   const year = new Date(date).getFullYear()
   const month = new Date(date).getMonth()
-  const thisYear = new Date(year, 01, 01)
-  const thisMonth = new Date(year, month, 01)
+  const thisYear = new Date(year, 1, 1)
+  const thisMonth = new Date(year, month, 1)
 
   const totalVerticalClimbs = totalVerticalClimbsAgg(userId)
+  const totalDaysClimbs = totalDaysClimbsAgg(userId, thisYear)
+  const totalPitchesClimbs = totalPitchesClimbsAgg(userId, thisMonth)
   const redpointGradesClimbs = getClimbsAgg(userId, {
     _id: 0,
     grade: 1
@@ -34,18 +37,32 @@ const getNumericStatsData = (userId, date) => {
     send: true,
     attempt: { $not: /Top Rope/ }
   })
-  const totalDaysClimbs = totalDaysClimbsAgg(userId, thisYear)
-  const totalPitchesClimbs = totalPitchesClimbsAgg(userId, thisMonth)
+
+  const totalVerticalAttempts = totalVerticalAttemptsAgg(userId)
+  const totalDaysAttempts = totalDaysAttemptsAgg(userId, thisYear)
+  const totalPitchesAttempts = totalPitchesAttemptsAgg(userId, thisMonth)
+  const redpointGradesAttempts = attemptsToProjectsAgg(userId, {
+    _id: 0,
+    grade: 1
+  }, {
+    send: true,
+    attemptType: { $not: /Top Rope/ }
+  })
+
+
 
   return Promise.all([
     totalVerticalClimbs,
     redpointGradesClimbs,
     totalDaysClimbs,
-    totalPitchesClimbs
+    totalPitchesClimbs,
+    totalVerticalAttempts,
+    redpointGradesAttempts,
+    totalDaysAttempts,
+    totalPitchesAttempts
   ])
 }
 
-// TODO: REFACTOR TO USE AGGREGATIONS
 const getNumericStatistics = async (userId, date) => {
   const result = await getNumericStatsData(userId, date)
 
@@ -57,78 +74,19 @@ const getNumericStatistics = async (userId, date) => {
   const totalPitchesClimbs = result[3][0].totalPitchesSum
 
 
+  const totalVerticalAttempts = result[4][0].totalLengthSum
+  const redpointGradesAttempts = result[5]
+  sortArrayOfObjectsByGrade(redpointGradesAttempts, 'grade')
+  const highestRedpointAttempts = redpointGradesAttempts.length && redpointGradesAttempts[redpointGradesAttempts.length - 1].grade
+  const totalDaysAttempts = result[6][0].totalDaysSum
+  const totalPitchesAttempts = result[7][0].totalPitchesSum
+
   const data = {
-    totalVertical: totalVerticalClimbs,
-    highestRedpointGrade: highestRedpointClimbs || null,
-    totalDaysThisYear: totalDaysClimbs,
-    pitchesThisMonth: totalPitchesClimbs
+    totalVertical: totalVerticalClimbs + totalVerticalAttempts,
+    highestRedpointGrade: getHigherGrade(highestRedpointClimbs, highestRedpointAttempts) || null,
+    totalDaysThisYear: totalDaysClimbs + totalDaysAttempts,
+    pitchesThisMonth: totalPitchesClimbs + totalPitchesAttempts
   }
-
-  // const data = {
-  //   totalVertical: 0,
-  //   highestRedpointGrade: '',
-  //   totalDaysThisYear: 0,
-  //   pitchesThisMonth: 0
-  // }
-
-  // const todaysDate = new Date(date)
-  // const totalCalendarDays = []
-  // const thisYear = todaysDate.getFullYear()
-
-  // const getNumberPitches = (arr) =>
-  //   arr.reduce((acc, curr) => acc + curr.numberPitches, 0)
-
-  // const isNewDate = (date) =>
-  //   date.getFullYear() === thisYear && !totalCalendarDays.includes(dateString(date))
-
-
-  // climbs.forEach(climb => {
-  //   const climbDate = new Date(climb.completedDate)
-  //   //vertical
-  //   data.totalVertical += climb.totalLength
-  //   //days
-  //   if (isNewDate(climbDate)) {
-  //     totalCalendarDays.push(dateString(climbDate))
-  //     data.totalDaysThisYear += 1
-  //   }
-  //   //pitches
-  //   if (isThisMonth(climbDate, todaysDate)) {
-  //     data.pitchesThisMonth += getNumberPitches(climb.pitches)
-  //   }
-  //   //redpoint
-  //   if (climb.send && climb.attempt !== 'Top Rope') {
-  //     data.highestRedpointGrade = getHigherGrade(data.highestRedpointGrade, climb.grade)
-  //   }
-  // })
-
-  // projects.forEach(project => {
-  //   const projectPitches = getNumberPitches(project.pitches)
-  //   if (project.completedDate) {
-  //     //redpoint
-  //     data.highestRedpointGrade = getHigherGrade(data.highestRedpointGrade, project.grade)
-  //   }
-
-  //   const totalAttempts = attempts.filter(attempt =>
-  //     attempt.projectId.toString() === project._id.toString()
-  //   )
-  //   //vertical
-  //   data.totalVertical += totalAttempts.length * project.totalLength
-  //   totalAttempts.forEach(attempt => {
-  //     const attemptDate = new Date(attempt.date)
-  //     //days
-  //     if (isNewDate(attemptDate)) {
-  //       totalCalendarDays.push(dateString(attemptDate))
-  //       data.totalDaysThisYear += 1
-  //     }
-  //     //pitches
-  //     if (isThisMonth(attemptDate, todaysDate)) {
-  //       data.pitchesThisMonth += projectPitches
-  //     }
-  //   })
-  // })
-
-  // data.highestRedpointGrade =
-  //   data.highestRedpointGrade === '' ? null : data.highestRedpointGrade
 
   return data
 }
