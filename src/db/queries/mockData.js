@@ -344,93 +344,103 @@ const attemptsAgg = [
   }
 ]
 
-const gradesChart = [
-  {
-    grade: '5.6',
-    count: 3,
-    attempts: [{
-      attemptType: 'Top Rope',
+const gradesChart = {
+  chartData: [
+    {
+      grade: '5.6',
       count: 3,
-      sendCount: 2
-    }]
-  },
-  {
-    grade: '5.8',
-    count: 6,
-    attempts: [
-      {
-        attemptType: 'Redpoint',
+      attempts: [{
+        attemptType: 'Top Rope',
         count: 3,
         sendCount: 2
-      },
-      {
-        attemptType: 'Top Rope',
-        count: 1,
-        sendCount: 1
-      },
-      {
-        attemptType: 'Onsight',
-        count: 2,
-        sendCount: 1
-      }
+      }]
+    },
+    {
+      grade: '5.8',
+      count: 6,
+      attempts: [
+        {
+          attemptType: 'Redpoint',
+          count: 3,
+          sendCount: 2
+        },
+        {
+          attemptType: 'Top Rope',
+          count: 1,
+          sendCount: 1
+        },
+        {
+          attemptType: 'Onsight',
+          count: 2,
+          sendCount: 1
+        }
 
-    ]
-  },
-  {
-    grade: '5.10a',
-    count: 2,
-    attempts: [
-      {
-        attemptType: 'Redpoint',
-        count: 1,
-        sendCount: 0
-      },
-      {
-        attemptType: 'Top Rope',
-        count: 1,
-        sendCount: 1
-      },
-    ]
-  },
-  {
-    grade: '5.10c',
-    count: 1,
-    attempts: [
-      {
-        attemptType: 'Redpoint',
-        count: 1,
-        sendCount: 1
-      }
-    ]
-  },
-  {
-    grade: '5.12b',
-    count: 6,
-    attempts: [
-      {
-        attemptType: 'Top Rope',
-        count: 5,
-        sendCount: 3
-      },
-      {
-        attemptType: 'Redpoint',
-        count: 1,
-        sendCount: 1
-      }
-    ]
-  },
-  {
-    grade: '5.12d',
-    count: 1,
-    attempts: [
-      {
-        attemptType: 'Onsight',
-        count: 1,
-        sendCount: 0
-      }
-    ]
-  },
-]
+      ]
+    },
+    {
+      grade: '5.10a',
+      count: 2,
+      attempts: [
+        {
+          attemptType: 'Redpoint',
+          count: 1,
+          sendCount: 0
+        },
+        {
+          attemptType: 'Top Rope',
+          count: 1,
+          sendCount: 1
+        },
+      ]
+    },
+    {
+      grade: '5.10c',
+      count: 1,
+      attempts: [
+        {
+          attemptType: 'Redpoint',
+          count: 1,
+          sendCount: 1
+        }
+      ]
+    },
+    {
+      grade: '5.12b',
+      count: 6,
+      attempts: [
+        {
+          attemptType: 'Top Rope',
+          count: 5,
+          sendCount: 3
+        },
+        {
+          attemptType: 'Redpoint',
+          count: 1,
+          sendCount: 1
+        }
+      ]
+    },
+    {
+      grade: '5.12d',
+      count: 1,
+      attempts: [
+        {
+          attemptType: 'Onsight',
+          count: 1,
+          sendCount: 0
+        }
+      ]
+    },
+  ],
+  otherData: {
+    gradeRange: expect.arrayContaining([
+      '5.6',
+      '5.11a',
+      '5.12d'
+    ]),
+    highestCount: 6
+  }
+}
 
 
 module.exports = {

@@ -12,6 +12,23 @@ const getAllUserAttempts = async (userId, filters = {}) => {
   }
 }
 
+const attemptsToProjectsAgg = (userId, project = {}, filter = {}) => (
+  Attempt.aggregate()
+    .match({ userId })
+    .lookup({
+      from: 'projects',
+      localField: 'projectId',
+      foreignField: '_id',
+      as: 'projects'
+    })
+    .replaceRoot({
+      $mergeObjects: [{ $arrayElemAt: ['$projects', 0] }, '$$ROOT']
+    })
+    .match({ ...filter })
+    .project({ ...project })
+)
+
+
 const attemptsProjectCountsAgg = (userId) => (
   Attempt.aggregate()
     .match({ userId })
@@ -50,5 +67,6 @@ const attemptsProjectCountsAgg = (userId) => (
 
 module.exports = {
   attemptsProjectCountsAgg,
+  attemptsToProjectsAgg,
   getAllUserAttempts
 }

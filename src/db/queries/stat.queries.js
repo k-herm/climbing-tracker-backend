@@ -1,5 +1,11 @@
-const { climbsGradeAttemptCountsAgg } = require('./climb.queries')
-const { attemptsProjectCountsAgg } = require('./attempt.queries')
+const {
+  climbsGradeAttemptCountsAgg,
+  getClimbsAgg
+} = require('./climb.queries')
+const {
+  attemptsProjectCountsAgg,
+  attemptsToProjectsAgg
+} = require('./attempt.queries')
 
 const {
   dateString,
@@ -11,6 +17,7 @@ const {
   getGradeCategories
 } = require('./utils')
 
+// TODO: REFACTOR TO USE AGGREGATIONS
 const getNumericStatistics = (climbs, projects, attempts, date) => {
   const data = {
     totalVertical: 0,
@@ -143,34 +150,30 @@ const getGradesChart = async (userId) => {
   }
 }
 
-const getClimbStyleChart = (climbs, projects, attempts) => {
-  const climbsData = climbs.map(climb => ({
-    grade: climb.grade,
-    date: climb.completedDate,
-    routeStyle: climb.routeStyle,
-    climbStyle: climb.climbStyle,
-    attempt: climb.attempt,
-    send: climb.send
-  })
-  )
+const getClimbStyleChart = async (userId, filter) => {
+  const climbsData = await getClimbsAgg(userId, {
+    _id: 0,
+    grade: 1,
+    date: '$completedDate',
+    routeStyle: 1,
+    climbStyle: 1,
+    attempt: 1,
+    send: 1
+  }, filter)
 
-  projects.forEach(project => {
-    const projectAttempts = attempts.filter(attempt =>
-      attempt.projectId.toString() === project._id.toString()
-    )
-    projectAttempts.forEach(attempt => {
-      climbsData.push({
-        grade: project.grade,
-        date: attempt.date,
-        routeStyle: project.routeStyle,
-        climbStyle: project.climbStyle,
-        attempt: attempt.attemptType,
-        send: attempt.send
-      })
-    })
-  })
+  const projectData = await attemptsToProjectsAgg(userId, {
+    _id: 0,
+    grade: 1,
+    date: 1,
+    routeStyle: 1,
+    climbStyle: 1,
+    attempt: '$attemptType',
+    send: 1,
+  }, filter)
 
-  const climbsByDate = climbsData.sort((a, b) => a.date - b.date)
+  const allData = climbsData.concat(projectData)
+
+  const climbsByDate = allData.sort((a, b) => a.date - b.date)
   const dateRange = []
   if (climbsByDate.length) {
     const firstDate = climbsByDate[0].date
@@ -185,10 +188,10 @@ const getClimbStyleChart = (climbs, projects, attempts) => {
     dateRange.push(currDate)
   }
 
-  sortArrayOfObjectsByGrade(climbsData, 'grade')
-  const gradeRange = climbsData.length ? getGradeCategories(climbsData) : []
-  const tradData = climbsData.filter(climb => climb.climbStyle === 'Trad')
-  const sportData = climbsData.filter(climb => climb.climbStyle === 'Sport')
+  sortArrayOfObjectsByGrade(allData, 'grade')
+  const gradeRange = allData.length ? getGradeCategories(climbsData) : []
+  const tradData = allData.filter(climb => climb.climbStyle === 'Trad')
+  const sportData = allData.filter(climb => climb.climbStyle === 'Sport')
 
   return {
     chartData: {

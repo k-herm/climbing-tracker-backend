@@ -12,6 +12,13 @@ const getAllUserClimbs = async (userId, filter = {}) => {
   }
 }
 
+const getClimbsAgg = async (userId, project = {}, filter = {}) => (
+  Climb.aggregate()
+    .match({ userId })
+    .match({ ...filter })
+    .project({ ...project })
+)
+
 const climbsGradeAttemptCountsAgg = (userId) => (
   Climb.aggregate()
     .match({ userId })
@@ -44,5 +51,6 @@ const climbsGradeAttemptCountsAgg = (userId) => (
 
 module.exports = {
   climbsGradeAttemptCountsAgg,
-  getAllUserClimbs
+  getAllUserClimbs,
+  getClimbsAgg
 }

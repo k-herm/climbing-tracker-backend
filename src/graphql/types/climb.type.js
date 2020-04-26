@@ -48,7 +48,7 @@ const Climb = new GraphQLObjectType({
       type: new GraphQLList(RouteStyleEnum)
     },
     climbStyle: {
-      type: ClimbStyleEnum
+      type: new GraphQLNonNull(ClimbStyleEnum)
     },
     attempt: {
       type: new GraphQLNonNull(AttemptEnum)

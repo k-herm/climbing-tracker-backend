@@ -46,7 +46,7 @@ const Project = new GraphQLObjectType({
       type: new GraphQLList(RouteStyleEnum)
     },
     climbStyle: {
-      type: ClimbStyleEnum
+      type: new GraphQLNonNull(ClimbStyleEnum)
     }
   })
 })
