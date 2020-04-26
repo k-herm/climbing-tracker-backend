@@ -17,7 +17,7 @@ const {
   getGradeCategories
 } = require('./utils')
 
-// TODO: REFACTOR TO USE AGGREGATIONS
+// so far looping through data is faster than 8 agg queries
 const getNumericStatistics = (climbs, projects, attempts, date) => {
   const data = {
     totalVertical: 0,
@@ -88,9 +88,16 @@ const getNumericStatistics = (climbs, projects, attempts, date) => {
   return data
 }
 
+const getGradesChartData = (userId) => {
+  const climbsAgg = climbsGradeAttemptCountsAgg(userId)
+  const attemptsAgg = attemptsProjectCountsAgg(userId)
+  return Promise.all([climbsAgg, attemptsAgg])
+}
+
 const getGradesChart = async (userId) => {
-  const climbsAgg = await climbsGradeAttemptCountsAgg(userId)
-  const attemptsAgg = await attemptsProjectCountsAgg(userId)
+  const results = await getGradesChartData(userId)
+  const climbsAgg = results[0]
+  const attemptsAgg = results[1]
 
   const projectsAgg = attemptsAgg.map((project) => ({
     grade: project.projectData[0].grade,
@@ -150,8 +157,44 @@ const getGradesChart = async (userId) => {
   }
 }
 
-const getClimbStyleChart = async (userId, filter) => {
-  const climbsData = await getClimbsAgg(userId, {
+const getDateCategories = (climbsData, projectData) => {
+  const firstClimbsDate = climbsData.length && climbsData[0].date
+  const lastClimbsDate = climbsData.length && climbsData[climbsData.length - 1].date
+  const firstProjectDate = projectData.length && projectData[0].date
+  const lastProjectDate = projectData.length && projectData[projectData.length - 1].date
+
+  let firstDate
+  let lastDate
+  if (firstClimbsDate && firstProjectDate) {
+    firstDate = firstClimbsDate < firstProjectDate ? firstClimbsDate : firstProjectDate
+  } else if (firstClimbsDate) {
+    firstDate = firstClimbsDate
+  } else {
+    firstDate = firstProjectDate
+  }
+  if (lastClimbsDate && lastProjectDate) {
+    lastDate = lastClimbsDate > lastProjectDate ? lastClimbsDate : lastProjectDate
+  } else if (lastClimbsDate) {
+    lastDate = lastClimbsDate
+  } else {
+    lastDate = lastProjectDate
+  }
+
+  const dateRange = []
+  let currDate = getMidMonthDate(firstDate)
+  const endDate = getMidMonthDate(lastDate)
+
+  while (currDate <= endDate) {
+    dateRange.push(currDate)
+    currDate = addOneMonth(currDate)
+  }
+  dateRange.push(currDate)
+
+  return dateRange
+}
+
+const getClimbStyleChartData = (userId, filter) => {
+  const climbsData = getClimbsAgg(userId, {
     _id: 0,
     grade: 1,
     date: '$completedDate',
@@ -161,31 +204,26 @@ const getClimbStyleChart = async (userId, filter) => {
     send: 1
   }, filter)
 
-  const projectData = await attemptsToProjectsAgg(userId, {
+  const projectData = attemptsToProjectsAgg(userId, {
     _id: 0,
     grade: 1,
     date: 1,
-    routeStyle: 1,
-    climbStyle: 1,
-    attempt: '$attemptType',
     send: 1,
   }, filter)
 
+  return Promise.all([climbsData, projectData])
+}
+
+const getClimbStyleChart = async (userId, filter) => {
+  const results = await getClimbStyleChartData(userId, filter)
+  const climbsData = results[0]
+  const projectData = results[1]
+
   const allData = climbsData.concat(projectData)
 
-  const climbsByDate = allData.sort((a, b) => a.date - b.date)
-  const dateRange = []
-  if (climbsByDate.length) {
-    const firstDate = climbsByDate[0].date
-    const lastDate = climbsByDate[climbsByDate.length - 1].date
-
-    let currDate = getMidMonthDate(firstDate)
-    const endDate = getMidMonthDate(lastDate)
-    while (currDate <= endDate) {
-      dateRange.push(currDate)
-      currDate = addOneMonth(currDate)
-    }
-    dateRange.push(currDate)
+  let dateRange = []
+  if (allData.length) {
+    dateRange = getDateCategories(climbsData, projectData)
   }
 
   sortArrayOfObjectsByGrade(allData, 'grade')

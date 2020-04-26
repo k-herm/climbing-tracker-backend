@@ -6,7 +6,7 @@ const {
 
 const { Goal: GoalType } = require('../types/goal.type')
 const { getAllUserGoals } = require('../../db/queries/goal.queries')
-const { GradeEnum } = require('../types/enums.type')
+const { GradeEnum, ClimbStyleEnum } = require('../types/enums.type')
 
 const goals = {
   type: new GraphQLList(GoalType),
@@ -15,9 +15,9 @@ const goals = {
       type: GraphQLID,
       description: 'Project Id'
     },
-    goalId: {
-      type: GraphQLID,
-      description: 'Goal Id'
+    climbStyle: {
+      type: ClimbStyleEnum,
+      description: 'Climb Style'
     },
     grade: {
       type: GradeEnum,
@@ -28,7 +28,7 @@ const goals = {
     try {
       const filters = {}
       if (args.projectId) { filters.projectId = args.projectId }
-      if (args.goalId) { filters.goalId = args.goalId }
+      if (args.climbStyle) { filters.climbStyle = args.climbStyle }
       if (args.grade) { filters.grade = args.grade }
       const goals = await getAllUserGoals(ctx.userId, { ...filters })
       return goals

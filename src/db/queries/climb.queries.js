@@ -16,6 +16,7 @@ const getClimbsAgg = async (userId, project = {}, filter = {}) => (
   Climb.aggregate()
     .match({ userId })
     .match({ ...filter })
+    .sort({ completedDate: 'asc' })
     .project({ ...project })
 )
 
