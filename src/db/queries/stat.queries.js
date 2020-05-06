@@ -227,7 +227,7 @@ const getClimbStyleChart = async (userId, filter) => {
   }
 
   sortArrayOfObjectsByGrade(allData, 'grade')
-  const gradeRange = allData.length ? getGradeCategories(climbsData) : []
+  const gradeRange = allData.length ? getGradeCategories(allData) : []
   const tradData = allData.filter(climb => climb.climbStyle === 'Trad')
   const sportData = allData.filter(climb => climb.climbStyle === 'Sport')
 
