@@ -13,6 +13,7 @@ const {
   ClimbStyleEnum
 } = require('./enums.type')
 const { Pitch } = require('./climb.type')
+const { Goal } = require('./goal.type')
 
 const Project = new GraphQLObjectType({
   name: 'Project',
@@ -47,6 +48,9 @@ const Project = new GraphQLObjectType({
     },
     climbStyle: {
       type: new GraphQLNonNull(ClimbStyleEnum)
+    },
+    goals: {
+      type: new GraphQLList(Goal)
     }
   })
 })

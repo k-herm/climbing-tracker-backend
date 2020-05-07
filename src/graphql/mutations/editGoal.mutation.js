@@ -10,9 +10,13 @@ const { Goal: GoalType, ClimbInput: ClimbType } = require('../types/goal.type')
 const Goal = require('../../db/models/goal.model')
 const { GradeEnum, ClimbStyleEnum } = require('../types/enums.type')
 
-const addGoal = {
+const editGoal = {
   type: GoalType,
   args: {
+    id: {
+      type: GraphQLID,
+      description: 'Goal ID'
+    },
     projectId: {
       type: GraphQLID,
       description: 'Associated project id'
@@ -35,12 +39,14 @@ const addGoal = {
     }
   },
   resolve: async (src, args, ctx, info) => {
+    const updateParams = {}
+    if (args.projectId) updateParams[projectId] = args.projectId
+    if (args.grade) updateParams[grade] = args.grade
+    if (args.numberClimbsToComplete) updateParams[numberClimbsToComplete] = args.numberClimbsToComplete
+    if (args.climbsCompleted) updateParams[climbsCompleted] = args.climbsCompleted
+    if (args.climbStyle) updateParams[args.climbStyle] = args.climbStyle
     try {
-      const goal = new Goal({
-        ...args,
-        userId: ctx.userId
-      })
-      goal.save()
+      const goal = await Goal.updateOne({ _id: args.id }, { ...updateParams })
       return goal
     } catch (error) {
       if (error.message)
@@ -50,5 +56,5 @@ const addGoal = {
 }
 
 module.exports = {
-  addGoal
+  editGoal
 }
