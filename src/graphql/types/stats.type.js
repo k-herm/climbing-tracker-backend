@@ -157,4 +157,4 @@ const OtherData = new GraphQLObjectType({
   })
 })
 
-module.exports = { Stats }
+module.exports = { Stats, AttemptValues }

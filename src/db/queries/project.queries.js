@@ -12,7 +12,7 @@ const getAllUserProjects = async (userId, filter = {}) => {
   }
 }
 
-const getProjectWithGoalsAgg = async (userId, filters = {}) => (
+const projectWithGoalsAgg = async (userId, filters = {}) => (
   Project.aggregate()
     .match({ userId })
     .lookup({
@@ -27,5 +27,5 @@ const getProjectWithGoalsAgg = async (userId, filters = {}) => (
 
 module.exports = {
   getAllUserProjects,
-  getProjectWithGoalsAgg
+  projectWithGoalsAgg
 }

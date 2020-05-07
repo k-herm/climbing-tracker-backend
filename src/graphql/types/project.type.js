@@ -14,6 +14,7 @@ const {
 } = require('./enums.type')
 const { Pitch } = require('./climb.type')
 const { Goal } = require('./goal.type')
+const { AttemptValues } = require('./stats.type')
 
 const Project = new GraphQLObjectType({
   name: 'Project',
@@ -51,6 +52,9 @@ const Project = new GraphQLObjectType({
     },
     goals: {
       type: new GraphQLList(Goal)
+    },
+    attempts: {
+      type: new GraphQLList(AttemptValues)
     }
   })
 })
