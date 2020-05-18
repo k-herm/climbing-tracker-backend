@@ -29,7 +29,6 @@ const attempts = {
     try {
       const filters = {}
       if (args.projectId) { filters.projectId = args.projectId }
-      if (args.goalId) { filters.goalId = args.goalId }
       if (args.attemptType) { filters.attemptType = args.attemptType }
       if (args.send) { filters.send = args.send }
       const attempts = await getAllUserAttempts(ctx.userId, { ...filters })

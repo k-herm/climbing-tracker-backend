@@ -2,13 +2,12 @@ const {
   GraphQLError,
   GraphQLInt,
   GraphQLNonNull,
-  GraphQLList,
   GraphQLID
 } = require('graphql')
 
-const { Goal: GoalType, ClimbInput: ClimbType } = require('../types/goal.type')
+const { Goal: GoalType } = require('../types/goal.type')
 const Goal = require('../../db/models/goal.model')
-const { GradeEnum, ClimbStyleEnum } = require('../types/enums.type')
+const { GradeEnum } = require('../types/enums.type')
 
 const addGoal = {
   type: GoalType,
@@ -22,16 +21,8 @@ const addGoal = {
       description: 'Difficulty'
     },
     numberClimbsToComplete: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'Number of goal climbs of the specified grade'
-    },
-    climbsCompleted: {
-      type: new GraphQLNonNull(new GraphQLList(ClimbType)),
-      description: 'Name and date of climb completed towards goal'
-    },
-    climbStyle: {
-      type: ClimbStyleEnum,
-      description: 'Style of climbing'
     }
   },
   resolve: async (src, args, ctx, info) => {

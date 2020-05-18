@@ -15,13 +15,6 @@ const goalSchema = new Schema({
   numberClimbsToComplete: {
     type: Number,
     default: 1
-  },
-  climbsCompleted: {
-    type: Array,
-    default: []
-  },
-  climbStyle: {
-    type: String
   }
 })
 

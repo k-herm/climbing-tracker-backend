@@ -6,6 +6,7 @@ const {
 
 const { Goal: GoalType } = require('../types/goal.type')
 const { getAllUserGoals } = require('../../db/queries/goal.queries')
+const { getNumClimbs } = require('../../db/queries/climb.queries')
 const { GradeEnum, ClimbStyleEnum } = require('../types/enums.type')
 
 const goals = {
@@ -28,9 +29,23 @@ const goals = {
     try {
       const filters = {}
       if (args.projectId) { filters.projectId = args.projectId }
-      if (args.climbStyle) { filters.climbStyle = args.climbStyle }
       if (args.grade) { filters.grade = args.grade }
       const goals = await getAllUserGoals(ctx.userId, { ...filters })
+
+      await Promise.all(
+        goals.map(async goal => {
+          const climbsCompleted = await getNumClimbs(
+            ctx.userId,
+            goal.numberClimbsToComplete,
+            { climbStyle: args.climbStyle },
+            { completedDate: 'desc' }
+          )
+          goal.climbsCompleted = climbsCompleted.map(climb => ({
+            name: climb.name || 'Unknown',
+            completedDate: climb.completedDate
+          }))
+        })
+      )
       return goals
     } catch (error) {
       if (error.message)

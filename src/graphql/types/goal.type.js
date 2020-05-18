@@ -1,6 +1,5 @@
 const {
   GraphQLObjectType,
-  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLID,
   GraphQLList,
@@ -9,7 +8,7 @@ const {
 } = require('graphql')
 const { GraphQLDate } = require('graphql-iso-date')
 
-const { GradeEnum, ClimbStyleEnum } = require('./enums.type')
+const { GradeEnum } = require('./enums.type')
 
 const Goal = new GraphQLObjectType({
   name: 'Goal',
@@ -25,16 +24,13 @@ const Goal = new GraphQLObjectType({
       type: GraphQLID
     },
     grade: {
-      type: GradeEnum
+      type: new GraphQLNonNull(GradeEnum)
     },
     numberClimbsToComplete: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt)
     },
     climbsCompleted: {
       type: new GraphQLNonNull(new GraphQLList(Climb))
-    },
-    climbStyle: {
-      type: ClimbStyleEnum
     }
   })
 })
@@ -52,17 +48,4 @@ const Climb = new GraphQLObjectType({
   })
 })
 
-const ClimbInput = new GraphQLInputObjectType({
-  name: 'GoalClimbInput',
-  description: 'Climbs accomplished for goal',
-  fields: () => ({
-    name: {
-      type: GraphQLString
-    },
-    completedDate: {
-      type: GraphQLDate
-    }
-  })
-})
-
-module.exports = { Goal, Climb, ClimbInput }
+module.exports = { Goal }

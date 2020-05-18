@@ -12,6 +12,19 @@ const getAllUserClimbs = async (userId, filter = {}) => {
   }
 }
 
+const getNumClimbs = async (userId, limit, filter = {}, sort = {}) => {
+  try {
+    const climbs = await Climb.find({ userId, ...filter })
+      .sort({ ...sort })
+      .limit(limit)
+
+    if (!climbs) return []
+    return climbs
+  } catch (error) {
+    throw new Error(error.name)
+  }
+}
+
 const getClimbsAgg = async (userId, project = {}, filter = {}) => (
   Climb.aggregate()
     .match({ userId })
@@ -53,5 +66,6 @@ const climbsGradeAttemptCountsAgg = (userId) => (
 module.exports = {
   climbsGradeAttemptCountsAgg,
   getAllUserClimbs,
-  getClimbsAgg
+  getClimbsAgg,
+  getNumClimbs
 }
