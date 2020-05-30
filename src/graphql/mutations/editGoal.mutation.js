@@ -1,4 +1,5 @@
 const {
+  GraphQLBoolean,
   GraphQLError,
   GraphQLInt,
   GraphQLNonNull,
@@ -27,6 +28,10 @@ const editGoal = {
     numberClimbsToComplete: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'Number of goal climbs of the specified grade'
+    },
+    isCustom: {
+      type: GraphQLBoolean,
+      description: 'Custom goal else predefined in a pyramid'
     }
   },
   resolve: async (src, args, ctx, info) => {
@@ -34,6 +39,7 @@ const editGoal = {
     if (args.projectId) updateParams[projectId] = args.projectId
     if (args.grade) updateParams[grade] = args.grade
     if (args.numberClimbsToComplete) updateParams[numberClimbsToComplete] = args.numberClimbsToComplete
+    if (args.isCustom) updateParams[isCustom] = args.isCustom
     try {
       const goal = await Goal.updateOne({ _id: args.id }, { ...updateParams })
       return goal

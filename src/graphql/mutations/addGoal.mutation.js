@@ -1,5 +1,6 @@
 const {
   GraphQLError,
+  GraphQLBoolean,
   GraphQLInt,
   GraphQLNonNull,
   GraphQLID
@@ -23,6 +24,10 @@ const addGoal = {
     numberClimbsToComplete: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'Number of goal climbs of the specified grade'
+    },
+    isCustom: {
+      type: GraphQLBoolean,
+      description: 'Custom goal else predefined in a pyramid'
     }
   },
   resolve: async (src, args, ctx, info) => {

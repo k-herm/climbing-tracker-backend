@@ -1,4 +1,5 @@
 const {
+  GraphQLBoolean,
   GraphQLList,
   GraphQLError,
   GraphQLID
@@ -23,6 +24,10 @@ const goals = {
     grade: {
       type: GradeEnum,
       description: 'Difficulty'
+    },
+    isCustom: {
+      type: GraphQLBoolean,
+      description: 'Custom goal else predefined in a pyramid'
     }
   },
   resolve: async (src, args, ctx, info) => {

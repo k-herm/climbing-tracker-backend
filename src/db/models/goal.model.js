@@ -8,6 +8,10 @@ const goalSchema = new Schema({
   projectId: {
     type: Schema.Types.ObjectId
   },
+  isCustom: {
+    type: Boolean,
+    default: true
+  },
   grade: {
     type: String,
     required: true

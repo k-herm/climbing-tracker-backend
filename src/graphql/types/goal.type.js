@@ -1,6 +1,7 @@
 const {
   GraphQLObjectType,
   GraphQLInt,
+  GraphQLBoolean,
   GraphQLID,
   GraphQLList,
   GraphQLNonNull,
@@ -31,6 +32,9 @@ const Goal = new GraphQLObjectType({
     },
     climbsCompleted: {
       type: new GraphQLNonNull(new GraphQLList(Climb))
+    },
+    isCustom: {
+      type: GraphQLBoolean
     }
   })
 })
