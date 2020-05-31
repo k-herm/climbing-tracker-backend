@@ -26,7 +26,7 @@ const addGoal = {
       description: 'Number of goal climbs of the specified grade'
     },
     isCustom: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'User defined goal'
     }
   },
