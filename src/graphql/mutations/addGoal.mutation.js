@@ -27,7 +27,7 @@ const addGoal = {
     },
     isCustom: {
       type: GraphQLBoolean,
-      description: 'Custom goal else predefined in a pyramid'
+      description: 'User defined goal'
     }
   },
   resolve: async (src, args, ctx, info) => {
