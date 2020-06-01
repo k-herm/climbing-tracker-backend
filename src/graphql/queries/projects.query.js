@@ -3,6 +3,8 @@ const { GraphQLList, GraphQLError } = require('graphql')
 const { Project: ProjectType } = require('../types/project.type')
 const { projectWithGoalsAgg } = require('../../db/queries/project.queries')
 const { attemptsProjectCountsAgg } = require('../../db/queries/attempt.queries')
+const { sortArrayOfObjectsByGrade } = require('../../db/queries/utils')
+
 const projects = {
   type: new GraphQLList(ProjectType),
   resolve: async (src, args, ctx, info) => {
@@ -11,6 +13,9 @@ const projects = {
       const attempts = await attemptsProjectCountsAgg(ctx.userId)
 
       projects.forEach(project => {
+        if (project.goals.length) {
+          sortArrayOfObjectsByGrade(project.goals, 'grade')
+        }
         const attemptData = attempts.find(attempt => attempt._id.toString() === project._id.toString())
         if (attemptData) {
           project.attempts = attemptData.attempts.map(attemptType => {

@@ -39,6 +39,7 @@ const goals = {
 
       await Promise.all(
         goals.map(async goal => {
+          // fill in completed climbs by grade with climbs query
           const climbsCompleted = await getNumClimbs(
             ctx.userId,
             goal.numberClimbsToComplete,
