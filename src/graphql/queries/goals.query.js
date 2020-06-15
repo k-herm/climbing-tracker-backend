@@ -24,10 +24,6 @@ const goals = {
     grade: {
       type: GradeEnum,
       description: 'Difficulty'
-    },
-    isCustom: {
-      type: GraphQLBoolean,
-      description: 'User defined goal'
     }
   },
   resolve: async (src, args, ctx, info) => {

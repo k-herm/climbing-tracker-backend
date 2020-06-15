@@ -8,7 +8,8 @@ const {
 
 const { Goal: GoalType } = require('../types/goal.type')
 const Goal = require('../../db/models/goal.model')
-const { GradeEnum } = require('../types/enums.type')
+const { ClimbStyleEnum, GradeEnum } = require('../types/enums.type')
+const { getNumClimbs } = require('../../db/queries/climb.queries')
 
 const addGoal = {
   type: GoalType,
@@ -28,15 +29,34 @@ const addGoal = {
     isCustom: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'User defined goal'
-    }
+    },
+    climbStyle: {
+      type: new GraphQLNonNull(ClimbStyleEnum),
+      description: 'Climb Style'
+    },
   },
   resolve: async (src, args, ctx, info) => {
     try {
+      const climbStyle = args.climbStyle
+      delete args.climbStyle
       const goal = new Goal({
         ...args,
         userId: ctx.userId
       })
       goal.save()
+
+      const climbs = await getNumClimbs(
+        ctx.userId,
+        goal.numberClimbsToComplete,
+        { climbStyle },
+        { completedDate: 'desc' }
+      )
+
+      goal.climbsCompleted = climbs.map(climb => ({
+        name: climb.name || 'Unknown',
+        completedDate: climb.completedDate
+      }))
+
       return goal
     } catch (error) {
       if (error.message)
