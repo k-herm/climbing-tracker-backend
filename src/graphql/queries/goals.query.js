@@ -1,5 +1,4 @@
 const {
-  GraphQLBoolean,
   GraphQLList,
   GraphQLError,
   GraphQLID
@@ -20,17 +19,12 @@ const goals = {
     climbStyle: {
       type: ClimbStyleEnum,
       description: 'Climb Style'
-    },
-    grade: {
-      type: GradeEnum,
-      description: 'Difficulty'
     }
   },
   resolve: async (src, args, ctx, info) => {
     try {
       const filters = {}
       if (args.projectId) { filters.projectId = args.projectId }
-      if (args.grade) { filters.grade = args.grade }
       const goals = await getAllUserGoals(ctx.userId, { ...filters })
 
       await Promise.all(
@@ -39,7 +33,7 @@ const goals = {
           const climbsCompleted = await getNumClimbs(
             ctx.userId,
             goal.numberClimbsToComplete,
-            { climbStyle: args.climbStyle },
+            { climbStyle: args.climbStyle, grade: goal.grade },
             { completedDate: 'desc' }
           )
           goal.climbsCompleted = climbsCompleted.map(climb => ({
