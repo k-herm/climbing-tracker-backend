@@ -32,6 +32,10 @@ const projectSchema = new Schema({
    },
    climbStyle: {
       type: String
+   },
+   isArchived: {
+      type: Boolean,
+      default: false
    }
 })
 

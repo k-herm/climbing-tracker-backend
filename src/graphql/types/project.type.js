@@ -1,5 +1,6 @@
 const {
   GraphQLObjectType,
+  GraphQLBoolean,
   GraphQLInt,
   GraphQLID,
   GraphQLString,
@@ -55,6 +56,9 @@ const Project = new GraphQLObjectType({
     },
     attempts: {
       type: new GraphQLList(AttemptValues)
+    },
+    isArchived: {
+      type: GraphQLBoolean
     }
   })
 })
