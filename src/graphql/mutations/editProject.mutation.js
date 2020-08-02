@@ -7,13 +7,12 @@ const {
   GraphQLID,
   GraphQLBoolean
 } = require('graphql')
+const { GraphQLDate } = require('graphql-iso-date')
 const { ClimbStyleEnum, GradeEnum, RouteStyleEnum } = require('../types/enums.type')
-const { Pitch } = require('../types/climb.type')
+const { PitchInput: PitchType } = require('../types/climb.type')
 
 const { Project: ProjectType } = require('../types/project.type')
 const Project = require('../../db/models/project.model')
-
-const { getNumClimbs } = require('../../db/queries/climb.queries')
 
 const editProject = {
   type: ProjectType,
@@ -30,19 +29,23 @@ const editProject = {
       type: GraphQLString,
       description: 'Project location'
     },
+    completedDate: {
+      type: GraphQLDate,
+      description: 'Completed Date'
+    },
     grade: {
       type: GradeEnum,
       description: 'Difficulty'
     },
     pitches: {
-      type: new GraphQLList(Pitch)
+      type: new GraphQLList(PitchType)
     },
     totalLength: {
       type: GraphQLInt,
       description: 'Total length of the climb'
     },
     routeStyle: {
-      type: RouteStyleEnum,
+      type: new GraphQLList(RouteStyleEnum),
       description: 'Type of climbing: sport or trad'
     },
     climbStyle: {
@@ -58,12 +61,13 @@ const editProject = {
     const updateParams = {}
     if (args.name) { updateParams.name = args.name }
     if (args.location) { updateParams.location = args.location }
+    if (args.completedDate) { updateParams.location = args.completedDate }
     if (args.grade) { updateParams.grade = args.grade }
     if (args.pitches) { updateParams.pitches = args.pitches }
     if (args.totalLength) { updateParams.totalLength = args.totalLength }
     if (args.routeStyle) { updateParams.routeStyle = args.routeStyle }
     if (args.climbStyle) { updateParams.climbStyle = args.climbStyle }
-    if (args.isArchived) { updateParams.climbStyle = args.isArchived }
+    if (args.isArchived) { updateParams.isArchived = args.isArchived }
 
     try {
       const project = await Project.findByIdAndUpdate(

@@ -4,6 +4,7 @@ const {
   GraphQLNonNull,
   GraphQLError,
   GraphQLList,
+  GraphQLBoolean,
 } = require('graphql')
 const { GraphQLDate } = require('graphql-iso-date')
 const { PitchInput: PitchType } = require('../types/climb.type')
@@ -45,6 +46,10 @@ const addProject = {
     climbStyle: {
       type: ClimbStyleEnum,
       description: 'Style of climbing'
+    },
+    isArchived: {
+      type: GraphQLBoolean,
+      description: 'is archived'
     }
   },
   resolve: async (src, args, ctx, info) => {

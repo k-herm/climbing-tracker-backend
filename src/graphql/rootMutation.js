@@ -8,6 +8,7 @@ const { addGoal } = require('./mutations/addGoal.mutation')
 const { editGoal } = require('./mutations/editGoal.mutation')
 const { deleteGoal } = require('./mutations/deleteGoal.mutation')
 const { deleteProject } = require('./mutations/deleteProject.mutation')
+const { editProject } = require('./mutations/editProject.mutation')
 
 const rootMutation = new GraphQLObjectType({
    name: 'RootMutation',
@@ -15,11 +16,12 @@ const rootMutation = new GraphQLObjectType({
       addClimb,
       addJournalEntry,
       addProject,
+      deleteProject,
+      editProject,
       addAttempt,
       addGoal,
       editGoal,
       deleteGoal,
-      deleteProject,
    })
 })
 
