@@ -152,7 +152,7 @@ const getGradesChart = async (userId) => {
     chartData: gradesChart,
     otherData: {
       highestCount,
-      gradeRange: getGradeCategories(gradesChart)
+      gradeRange: gradesChart.length ? getGradeCategories(gradesChart) : []
     }
   }
 }
