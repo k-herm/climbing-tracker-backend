@@ -13,8 +13,8 @@ router.post('/register', async (req, res) => {
 
     setTokenAndCookie(createPayload(newUser), res)
     res.status(200).send({
-      userId: user._id,
-      userName: user.name
+      userId: newUser._id,
+      userName: newUser.name
     })
   }
   catch (error) {
