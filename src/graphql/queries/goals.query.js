@@ -33,7 +33,12 @@ const goals = {
           const climbsCompleted = await getNumClimbs(
             ctx.userId,
             goal.numberClimbsToComplete,
-            { climbStyle: args.climbStyle, grade: goal.grade },
+            {
+              climbStyle: args.climbStyle,
+              grade: goal.grade,
+              attempt: { $in: ['Onsight', 'Redpoint'] },
+              send: true
+            },
             { completedDate: 'desc' }
           )
           goal.climbsCompleted = climbsCompleted.map(climb => ({
@@ -42,6 +47,8 @@ const goals = {
           }))
         })
       )
+
+      console.log('goals....', goals)
       return goals
     } catch (error) {
       if (error.message)
