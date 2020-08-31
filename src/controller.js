@@ -1,5 +1,5 @@
 const express = require('express')
-const { createUser, logout } = require('./db/mutations/user.mutations')
+const { createUser, logout, resetUserPassword } = require('./db/mutations/user.mutations')
 const { signin, getUser } = require('./db/queries/user.queries')
 const authenticate = require('./auth')
 const { clearCookie, createPayload, setTokenAndCookie } = require('./utils')
@@ -60,7 +60,7 @@ router.route('/me')
     userName: req.userName
   }))
 
-router.post('/reset-password', async (req, res) => {
+router.post('/password-recovery', async (req, res) => {
   try {
     const { email } = req.body
     const user = await getUser(email.toLowerCase())
@@ -76,6 +76,27 @@ router.post('/reset-password', async (req, res) => {
     console.log(`An email has been sent to ${email} to reset their password.`)
     res.status(200).send({
       message: "Password reset sent to email."
+    })
+  }
+  catch (error) {
+    res.status(401).send({ error: error.message })
+  }
+})
+
+router.post('/password-reset', async (req, res) => {
+  try {
+    const { resetToken, password, passwordConfirm } = req.body
+
+    const user = await resetUserPassword(
+      resetToken,
+      password,
+      passwordConfirm
+    )
+
+    setTokenAndCookie(createPayload(user), res)
+    res.status(200).send({
+      userId: user._id,
+      userName: user.name
     })
   }
   catch (error) {

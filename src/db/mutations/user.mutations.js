@@ -30,7 +30,33 @@ const logout = async (userId) => {
   }
 }
 
+const resetUserPassword = async (resetToken, password, passwordConfirm) => {
+  if (password !== passwordConfirm) {
+    throw new Error('Passwords do not match.')
+  }
+  try {
+    const user = await User.findOne({ resetToken }, (error, result) => {
+      if (error) {
+        throw new Error('Network Error.', error)
+      }
+    })
+    if (user.resetTokenExpiry < Date.now() - 3600000) {
+      throw new Error('This token is expired.')
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10)
+    user.password = hashPassword
+    await user.save()
+
+    return user
+  } catch (error) {
+    console.log(error.message)
+    throw new Error(error.message)
+  }
+}
+
 module.exports = {
   createUser,
-  logout
+  logout,
+  resetUserPassword
 }
