@@ -1,15 +1,16 @@
 const express = require('express')
 const { createUser, logout } = require('./db/mutations/user.mutations')
-const { signin } = require('./db/queries/user.queries')
+const { signin, getUser } = require('./db/queries/user.queries')
 const authenticate = require('./auth')
 const { clearCookie, createPayload, setTokenAndCookie } = require('./utils')
+const { transport, resetEmail } = require('./resetEmail')
 
 const router = express.Router()
 
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, passwordConfirm } = req.body
-    const newUser = await createUser(name, email, password, passwordConfirm)
+    const newUser = await createUser(name, email.toLowerCase(), password, passwordConfirm)
 
     setTokenAndCookie(createPayload(newUser), res)
     res.status(200).send({
@@ -25,7 +26,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body
-    const user = await signin(email, password)
+    const user = await signin(email.toLowerCase(), password)
 
     setTokenAndCookie(createPayload(user), res)
     res.status(200).send({
@@ -58,6 +59,29 @@ router.route('/me')
     userId: req.userId,
     userName: req.userName
   }))
+
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email } = req.body
+    const user = await getUser(email.toLowerCase())
+    const reset = await user.generateResetToken()
+
+    await transport.sendMail({
+      from: 'kiesha.herman@gmail.com',
+      to: user.email,
+      subject: 'iClimb Tracker: Password Reset',
+      html: resetEmail(`${process.env.FRONTEND_URL}/reset?resetToken=${reset.token}`)
+    })
+
+    console.log(`An email has been sent to ${email} to reset their password.`)
+    res.status(200).send({
+      message: "Password reset sent to email."
+    })
+  }
+  catch (error) {
+    res.status(401).send({ error: error.message })
+  }
+})
 
 router.route('/graphql')
   .all(authenticate)

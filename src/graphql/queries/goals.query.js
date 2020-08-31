@@ -48,7 +48,6 @@ const goals = {
         })
       )
 
-      console.log('goals....', goals)
       return goals
     } catch (error) {
       if (error.message)

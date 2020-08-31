@@ -51,5 +51,20 @@ userSchema.methods.generateToken = function () {
    return user.save().then(() => user.token)
 }
 
+userSchema.methods.generateResetToken = function () {
+   let user = this
+   const ONE_HOUR = 3600000
+
+   user.resetToken = randomBytes(12).toString('base64')
+   user.resetTokenExpiry = Date.now() + ONE_HOUR
+
+   return user.save().then(() => ({
+      token: user.resetToken,
+      tokenExpiry: user.resetTokenExpiry
+   }))
+}
+
+
+
 const User = model('User', userSchema)
 module.exports = User

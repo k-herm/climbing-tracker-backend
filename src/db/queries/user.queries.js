@@ -21,6 +21,16 @@ const signin = async (email, password) => {
   return user
 }
 
+const getUser = async (email) => {
+  const user = await User.findOne({ email }, (error, result) => {
+    if (error) {
+      throw new Error('Network Error.', error)
+    }
+  })
+  if (!user) throw new Error(`No user found for email ${email}`)
+  return user
+}
+
 const getUserData = async (userId, climbFilters = {}) => {
   const filters = { ...climbFilters }
   if (climbFilters.routeStyle) {
@@ -40,6 +50,7 @@ const getUserData = async (userId, climbFilters = {}) => {
 
 module.exports = {
   signin,
+  getUser,
   getUserData
 }
 
