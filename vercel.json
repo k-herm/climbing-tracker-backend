@@ -1,0 +1,7 @@
+{
+  "name": "iclimb2-0-backend",
+  "version": 2,
+  "env": {
+    "MONGO_URL": "@mongo_url"
+  }
+}

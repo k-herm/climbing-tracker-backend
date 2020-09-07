@@ -21,7 +21,7 @@ app.use(cors({
    credentials: true,
    origin: [
       /^https?:\/\/localhost:\d{4}$/,
-      //website domain env
+      /^https:\/\/(.+\.)?iclimbtracker.com$/
    ]
 }))
 
