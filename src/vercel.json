@@ -2,6 +2,14 @@
   "name": "iclimb2-0-backend",
   "version": 2,
   "env": {
-    "MONGO_URL": "@mongo_url"
+    "MONGO_URL": "@mongo_url",
+    "PORT": 4000,
+    "FRONTEND_URL": "@frontend_url",
+    "APP_DOMAIN": "@app_domain",
+    "JWT_SECRET": "@jwt_secret",
+    "MAIL_HOST": "@mail_host",
+    "MAIL_PORT": "@mail_port",
+    "MAIL_USER": "@mail_user",
+    "MAIL_PASS": "@mail_pass"
   }
 }
