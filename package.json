@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./src/index.js",
+    "prod": "node ./src/index.js",
     "test": "jest --watch --maxWorkers=4"
   },
   "keywords": [
