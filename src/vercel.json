@@ -1,15 +1,16 @@
 {
   "name": "iclimb2-0-backend",
   "version": 2,
-  "env": {
-    "PORT": 4000,
-    "MONGO_URL": "@MONGO_URL",
-    "FRONTEND_URL": "@FRONTEND_URL",
-    "APP_DOMAIN": "@APP_DOMAIN",
-    "JWT_SECRET": "@JWT_SECRET",
-    "MAIL_HOST": "@MAIL_HOST",
-    "MAIL_PORT": "@MAIL_PORT",
-    "MAIL_USER": "@MAIL_USER",
-    "MAIL_PASS": "@MAIL_PASS"
-  }
+  "builds": [
+    {
+      "src": "*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/.*",
+      "dest": "src/index.js"
+    }
+  ]
 }
