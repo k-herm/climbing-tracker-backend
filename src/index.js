@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors({
    credentials: true,
    origin: [
-      /^https?:\/\/localhost:\d{4}$/,
+      // /^https?:\/\/localhost:\d{4}$/,
       /^https:\/\/(.+\.)?iclimbtracker.com$/
    ]
 }))
